@@ -1,0 +1,16 @@
+{
+  "LOADING": "Lade...",
+  "HOME": "Heim",
+  "AWAY": "Auswärts",
+  "PRE_GAME": "Aufwärmen",
+  "1ST_PERIOD": "1. Drittel",
+  "2ND_PERIOD": "2. Drittel",
+  "3RD_PERIOD": "3. Drittel",
+  "OVER_TIME": "Verlängerung",
+  "SHOOTOUT": "Elfmeterschießen",
+  "FINAL": "Beendet",
+  "FINAL_OVERTIME": "Verlängerung beendet",
+  "FINAL_SHOOTOUT": "Elfmeterschießen beendet",
+  "UNKNOWN": "Unbekannt",
+  "TIME_LEFT": "übrig"
+}

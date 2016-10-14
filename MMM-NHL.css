@@ -1,0 +1,19 @@
+.MMM-NHL .table {
+    border-spacing: 10px 0px;
+    border-collapse: separate;
+    text-align: center;
+}
+
+.MMM-NHL .icon {
+    -webkit-filter: grayscale(100%);
+}
+
+.MMM-NHL .row {
+    vertical-align: middle;
+}
+
+.MMM-NHL .live {
+    font-size: 10px;
+    line-height: 15px;
+    display: block;
+}

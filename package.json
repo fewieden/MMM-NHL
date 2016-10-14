@@ -1,0 +1,23 @@
+{
+  "name": "mmm-nhl",
+  "version": "1.0.0",
+  "description": "National Hockey League Module for MagicMirror2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fewieden/MMM-NHL.git"
+  },
+  "keywords": [
+    "MagicMirror",
+    "NHL"
+  ],
+  "author": "fewieden",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fewieden/MMM-NHL/issues"
+  },
+  "homepage": "https://github.com/fewieden/MMM-NHL#readme",
+  "dependencies": {
+    "request": "^2.74.0",
+    "moment-timezone": "^0.5.5"
+  }
+}
