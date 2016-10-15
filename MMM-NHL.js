@@ -165,7 +165,7 @@ Module.register("MMM-NHL", {
                 if(data.ts === "PRE GAME"){
                     date.innerHTML = this.translate("PRE_GAME");
                     date.classList.add("dimmed");
-                } else if(data.ts.slice(-3) in ["1st", "2nd", "3rd"]){
+                } else if(["1st", "2nd", "3rd"].indexOf(data.ts.slice(-3)) !== -1){
                     var third = document.createElement("div");
                     third.innerHTML = this.translate(this.states[data.ts.slice(-3)]);
                     if (data.ts.slice(0, 3) !== "END") {
@@ -220,7 +220,7 @@ Module.register("MMM-NHL", {
 
             var awayLogo = document.createElement("td");
             var awayIcon = document.createElement("img");
-            awayIcon.src = this.file("icons/" + this.teams[data.atv] + ".png");;
+            awayIcon.src = this.file("icons/" + this.teams[data.atv] + ".png");
             if (!this.config.colored) {
                 awayIcon.classList.add("icon");
             }
