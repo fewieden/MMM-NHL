@@ -62,10 +62,15 @@ Module.register("MMM-NHL", {
         "wild": "MIN"
     },
 
+    rotateIndex: 0,
+    rotateInterval: null,
+
     defaults: {
         colored: false,
         focus_on: false,
+        matches: 6,
         format: "ddd h:mm",
+        rotateInterval: 20 * 1000,
         reloadInterval: 30 * 60 * 1000       // every 30 minutes
     },
 
@@ -94,8 +99,25 @@ Module.register("MMM-NHL", {
         if (notification === "SCORES") {
             this.scores = payload.scores;
             this.details = payload.details;
-            this.updateDom(300);
+            this.setRotateInterval();
         }
+    },
+
+    setRotateInterval: function(){
+        if(!this.rotateInterval && this.scores.length > this.config.matches) {
+            this.rotateInterval = setInterval(() => {
+                if(this.rotateIndex + this.config.matches >= this.scores.length){
+                    this.rotateIndex = 0;
+                } else {
+                    this.rotateIndex = this.rotateIndex + this.config.matches;
+                }
+                this.updateDom(300);
+            }, this.config.rotateInterval);
+        } else if(this.scores.length <= this.config.matches){
+            clearInterval(this.rotateInterval);
+            this.rotateIndex = 0;
+        }
+        this.updateDom(300);
     },
 
     getDom: function () {
@@ -117,7 +139,8 @@ Module.register("MMM-NHL", {
 
             table.appendChild(this.createLabelRow());
 
-            for (var i = 0; i < this.scores.length; i++) {
+            var max = Math.min(this.rotateIndex + this.config.matches, this.scores.length);
+            for (var i = this.rotateIndex; i < max; i++) {
                 this.appendDataRow(this.scores[i], table);
             }
 

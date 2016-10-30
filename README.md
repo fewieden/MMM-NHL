@@ -27,5 +27,7 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 | --- | --- | --- |
 | `colored` | `false` | Remove black/white filter of logos. |
 | `focus_on` | `false` | Display only matches with teams of this array e.g. `['VAN', 'MTL', 'BOS']`. |
+| `matches` | `6` | Max number of matches displaying simultaneously. |
 | `format` | `'ddd h:mm'` | In which format the date should be displayed. [All Options](http://momentjs.com/docs/#/displaying/format/) |
-| `reloadInterval` | `1800000` (30 mins) | How often should the data be fetched |
+| `rotateInterval` | `20000` (20 secs) | How often should be rotated the matches in the list. |
+| `reloadInterval` | `1800000` (30 mins) | How often should the data be fetched. |
