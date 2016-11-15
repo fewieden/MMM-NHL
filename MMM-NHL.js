@@ -91,7 +91,7 @@ Module.register("MMM-NHL", {
 
     start: function () {
         Log.info("Starting module: " + this.name);
-        this.sendSocketNotification("CONFIG", this.config);
+        this.sendSocketNotification("CONFIG", {config: this.config, teams: this.teams});
         moment.locale(config.language);
     },
 
@@ -179,85 +179,83 @@ Module.register("MMM-NHL", {
     },
 
     appendDataRow: function (data, appendTo) {
-        if(!this.config.focus_on || this.config.focus_on.indexOf(this.teams[data.htv]) !== -1 || this.config.focus_on.indexOf(this.teams[data.atv]) !== -1) {
-            var row = document.createElement("tr");
-            row.classList.add("row");
+        var row = document.createElement("tr");
+        row.classList.add("row");
 
-            var date = document.createElement("td");
-            if (data.bsc === "progress") {
-                if(data.ts === "PRE GAME"){
-                    date.innerHTML = this.translate("PRE_GAME");
-                    date.classList.add("dimmed");
-                } else if(["1st", "2nd", "3rd"].indexOf(data.ts.slice(-3)) !== -1){
-                    var third = document.createElement("div");
-                    third.innerHTML = this.translate(this.states[data.ts.slice(-3)]);
-                    if (data.ts.slice(0, 3) !== "END") {
-                        third.classList.add("live");
-                        date.appendChild(third);
-                        var time = document.createElement("div");
-                        time.classList.add("live");
-                        time.innerHTML = data.ts.slice(0, -4) + ' ' + this.translate("TIME_LEFT");
-                        date.appendChild(time);
-                    } else {
-                        date.appendChild(third);
-                    }
+        var date = document.createElement("td");
+        if (data.bsc === "progress") {
+            if(data.ts === "PRE GAME"){
+                date.innerHTML = this.translate("PRE_GAME");
+                date.classList.add("dimmed");
+            } else if(["1st", "2nd", "3rd"].indexOf(data.ts.slice(-3)) !== -1){
+                var third = document.createElement("div");
+                third.innerHTML = this.translate(this.states[data.ts.slice(-3)]);
+                if (data.ts.slice(0, 3) !== "END") {
+                    third.classList.add("live");
+                    date.appendChild(third);
+                    var time = document.createElement("div");
+                    time.classList.add("live");
+                    time.innerHTML = data.ts.slice(0, -4) + ' ' + this.translate("TIME_LEFT");
+                    date.appendChild(time);
+                } else {
+                    date.appendChild(third);
                 }
-            } else if (data.bsc === "" && data.hasOwnProperty("starttime")) {
-                date.innerHTML = moment(data.starttime).format(this.config.format);
-            } else if(data.bsc === "final") {
-                date.innerHTML = this.translate(this.states[data.bs]);
-                date.classList.add("dimmed");
-            } else {
-                date.innerHTML = this.translate("UNKNOWN");
-                date.classList.add("dimmed");
             }
-            row.appendChild(date);
-
-            var homeTeam = document.createElement("td");
-            homeTeam.classList.add("align-right");
-            var homeTeamSpan = document.createElement("span");
-            homeTeamSpan.innerHTML = this.teams[data.htv];
-            homeTeam.appendChild(homeTeamSpan);
-            row.appendChild(homeTeam);
-
-            var homeLogo = document.createElement("td");
-            var homeIcon = document.createElement("img");
-            homeIcon.src = this.file("icons/" + this.teams[data.htv] + ".png");
-            if (!this.config.colored) {
-                homeIcon.classList.add("icon");
-            }
-            homeLogo.appendChild(homeIcon);
-            row.appendChild(homeLogo);
-
-            var homeScore = document.createElement("td");
-            homeScore.innerHTML = data.hts === "" ? 0 : data.hts;
-            row.appendChild(homeScore);
-
-            var vs = document.createElement("td");
-            vs.innerHTML = ":";
-            row.appendChild(vs);
-
-            var awayScore = document.createElement("td");
-            awayScore.innerHTML = data.ats === "" ? 0 : data.ats;
-            row.appendChild(awayScore);
-
-            var awayLogo = document.createElement("td");
-            var awayIcon = document.createElement("img");
-            awayIcon.src = this.file("icons/" + this.teams[data.atv] + ".png");
-            if (!this.config.colored) {
-                awayIcon.classList.add("icon");
-            }
-            awayLogo.appendChild(awayIcon);
-            row.appendChild(awayLogo);
-
-            var awayTeam = document.createElement("td");
-            awayTeam.classList.add("align-left");
-            var awayTeamSpan = document.createElement("span");
-            awayTeamSpan.innerHTML = this.teams[data.atv];
-            awayTeam.appendChild(awayTeamSpan);
-            row.appendChild(awayTeam);
-
-            appendTo.appendChild(row);
+        } else if (data.bsc === "" && data.hasOwnProperty("starttime")) {
+            date.innerHTML = moment(data.starttime).format(this.config.format);
+        } else if(data.bsc === "final") {
+            date.innerHTML = this.translate(this.states[data.bs]);
+            date.classList.add("dimmed");
+        } else {
+            date.innerHTML = this.translate("UNKNOWN");
+            date.classList.add("dimmed");
         }
+        row.appendChild(date);
+
+        var homeTeam = document.createElement("td");
+        homeTeam.classList.add("align-right");
+        var homeTeamSpan = document.createElement("span");
+        homeTeamSpan.innerHTML = this.teams[data.htv];
+        homeTeam.appendChild(homeTeamSpan);
+        row.appendChild(homeTeam);
+
+        var homeLogo = document.createElement("td");
+        var homeIcon = document.createElement("img");
+        homeIcon.src = this.file("icons/" + this.teams[data.htv] + ".png");
+        if (!this.config.colored) {
+            homeIcon.classList.add("icon");
+        }
+        homeLogo.appendChild(homeIcon);
+        row.appendChild(homeLogo);
+
+        var homeScore = document.createElement("td");
+        homeScore.innerHTML = data.hts === "" ? 0 : data.hts;
+        row.appendChild(homeScore);
+
+        var vs = document.createElement("td");
+        vs.innerHTML = ":";
+        row.appendChild(vs);
+
+        var awayScore = document.createElement("td");
+        awayScore.innerHTML = data.ats === "" ? 0 : data.ats;
+        row.appendChild(awayScore);
+
+        var awayLogo = document.createElement("td");
+        var awayIcon = document.createElement("img");
+        awayIcon.src = this.file("icons/" + this.teams[data.atv] + ".png");
+        if (!this.config.colored) {
+            awayIcon.classList.add("icon");
+        }
+        awayLogo.appendChild(awayIcon);
+        row.appendChild(awayLogo);
+
+        var awayTeam = document.createElement("td");
+        awayTeam.classList.add("align-left");
+        var awayTeamSpan = document.createElement("span");
+        awayTeamSpan.innerHTML = this.teams[data.atv];
+        awayTeam.appendChild(awayTeamSpan);
+        row.appendChild(awayTeam);
+
+        appendTo.appendChild(row);
     }
 });
