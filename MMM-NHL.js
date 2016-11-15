@@ -139,9 +139,14 @@ Module.register("MMM-NHL", {
 
             table.appendChild(this.createLabelRow());
 
-            var max = Math.min(this.rotateIndex + this.config.matches, this.scores.length);
-            for (var i = this.rotateIndex; i < max; i++) {
-                this.appendDataRow(this.scores[i], table);
+            var count = 0;
+            var i = this.rotateIndex;
+            while(count < this.config.matches - 1 && i < this.scores.length){
+                if(!this.config.focus_on || this.config.focus_on.indexOf(this.teams[this.scores[i].htv]) !== -1 || this.config.focus_on.indexOf(this.teams[this.scores[i].atv]) !== -1) {
+                    this.appendDataRow(this.scores[i], table);
+                    count++;
+                }
+                i++;
             }
 
             scores.appendChild(table);
