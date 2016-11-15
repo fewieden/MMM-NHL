@@ -26,7 +26,8 @@ module.exports = NodeHelper.create({
 
     socketNotificationReceived: function(notification, payload) {
         if(notification === "CONFIG"){
-            this.config = payload;
+            this.config = payload.config;
+            this.teams = payload.teams;
             this.getData();
             setInterval(() => {
                 this.getData();
@@ -43,15 +44,19 @@ module.exports = NodeHelper.create({
                 var f = new Function("loadScoreboard", body);
                 f((data) => {
                     if(data.hasOwnProperty("games")){
-                        this.scores = data.games;
-                        for(var i = 0; i < data.games.length; i++){
-                            if(data.games[i].tsc !== "final" || i === data.games.length - 1){
-                                var id = data.games[i].id + "";
-                                this.details = {
-                                    y: id.slice(0, 4),
-                                    t: id.slice(4, 6)
-                                };
-                                break;
+                        this.scores = [];
+                        for(var i = data.games.length - 1; i >= 0; i--){
+                            if(!this.config.focus_on ||
+                                this.config.focus_on.indexOf(this.teams[data.games[i].htv]) !== -1 ||
+                                this.config.focus_on.indexOf(this.teams[data.games[i].atv]) !== -1) {
+                                if (data.games[i].tsc !== "final") {
+                                    var id = data.games[i].id + "";
+                                    this.details = {
+                                        y: id.slice(0, 4),
+                                        t: id.slice(4, 6)
+                                    };
+                                }
+                                this.scores.unshift(data.games[i]);
                             }
                         }
                         this.setMode();
