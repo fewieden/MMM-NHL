@@ -49,7 +49,7 @@ module.exports = NodeHelper.create({
                             if(!this.config.focus_on ||
                                 this.config.focus_on.indexOf(this.teams[data.games[i].htv]) !== -1 ||
                                 this.config.focus_on.indexOf(this.teams[data.games[i].atv]) !== -1) {
-                                if (data.games[i].tsc !== "final") {
+                                if (data.games[i].tsc !== "final" || i === data.games.length - 1) {
                                     var id = data.games[i].id + "";
                                     this.details = {
                                         y: id.slice(0, 4),
