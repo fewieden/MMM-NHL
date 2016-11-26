@@ -116,7 +116,7 @@ module.exports = NodeHelper.create({
             this.nextMatch = null;
         }
 
-        if(this.nextMatch === null && all_ended === false || this.live.state === true){
+        if(next !== null && this.nextMatch === null && all_ended === false || this.live.state === true){
             this.nextMatch = {
                 id: next.id,
                 time: next.starttime
