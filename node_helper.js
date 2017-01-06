@@ -82,7 +82,7 @@ module.exports = NodeHelper.create({
             var temp = this.scores[i];
             if(this.scores[i].bsc === ""){
                 var time = temp.bs.split(" ")[0].split(":");
-                var mom = moment().tz("America/New_York");
+                var mom = moment().tz("America/Los_Angeles");
                 if(temp.ts !== "TODAY"){
                     var date = temp.ts.split(" ")[1].split("/");
                     mom.set("month", date[0]);
