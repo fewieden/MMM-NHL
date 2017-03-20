@@ -1,11 +1,12 @@
 .MMM-NHL .table {
-    border-spacing: 10px 0px;
+    border-spacing: 10px 0;
     border-collapse: separate;
     text-align: center;
 }
 
 .MMM-NHL .icon {
     -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
 }
 
 .MMM-NHL .row {
