@@ -23,7 +23,7 @@ module.exports = NodeHelper.create({
     },
 
     start() {
-        console.log(`Staring module helper: ${this.name}`);
+        console.log(`Starting module helper: ${this.name}`);
     },
 
     socketNotificationReceived(notification, payload) {

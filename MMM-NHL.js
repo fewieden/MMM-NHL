@@ -72,8 +72,8 @@ Module.register('MMM-NHL', {
         focus_on: false,
         matches: 6,
         format: 'ddd h:mm',
-        rotateInterval: 20 * 1000,
-        reloadInterval: 30 * 60 * 1000       // every 30 minutes
+        rotateInterval: 20 * 1000, // every 20 seconds
+        reloadInterval: 30 * 60 * 1000 // every 30 minutes
     },
 
     getTranslations() {

@@ -24,7 +24,7 @@ National Hockey League Module for MagicMirror<sup>2</sup>
     }
     ```
 
-1. Run command `npm install` in `~/MagicMirror/modules/MMM-NHL` directory.
+1. Run command `npm install --productive` in `~/MagicMirror/modules/MMM-NHL` directory.
 
 ## Config Options
 
