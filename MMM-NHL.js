@@ -220,15 +220,6 @@ Module.register('MMM-NHL', {
         homeTeam.appendChild(homeTeamSpan);
         row.appendChild(homeTeam);
 
-        const homeLogo = document.createElement('td');
-        const homeIcon = document.createElement('img');
-        homeIcon.src = this.file(`icons/${this.teams[data.htv]}.png`);
-        if (!this.config.colored) {
-            homeIcon.classList.add('icon');
-        }
-        homeLogo.appendChild(homeIcon);
-        row.appendChild(homeLogo);
-
         const homeScore = document.createElement('td');
         homeScore.innerHTML = data.hts === '' ? 0 : data.hts;
         row.appendChild(homeScore);
@@ -240,15 +231,6 @@ Module.register('MMM-NHL', {
         const awayScore = document.createElement('td');
         awayScore.innerHTML = data.ats === '' ? 0 : data.ats;
         row.appendChild(awayScore);
-
-        const awayLogo = document.createElement('td');
-        const awayIcon = document.createElement('img');
-        awayIcon.src = this.file(`icons/${this.teams[data.atv]}.png`);
-        if (!this.config.colored) {
-            awayIcon.classList.add('icon');
-        }
-        awayLogo.appendChild(awayIcon);
-        row.appendChild(awayLogo);
 
         const awayTeam = document.createElement('td');
         awayTeam.classList.add('align-left');
