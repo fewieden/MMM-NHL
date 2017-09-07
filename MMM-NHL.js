@@ -45,6 +45,7 @@ Module.register('MMM-NHL', {
         ducks: 'ANA',
         flames: 'CGY',
         flyers: 'PHI',
+        goldenknights: 'VGK',
         hurricanes: 'CAR',
         islanders: 'NYI',
         jets: 'WPG',
