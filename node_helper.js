@@ -22,11 +22,11 @@ module.exports = NodeHelper.create({
         matches: []
     },
 
-    start() {
-        console.log(`Starting module helper: ${this.name}`);
+    start: function() {
+        console.log('Starting module helper: ' + this.name);
     },
 
-    socketNotificationReceived(notification, payload) {
+    socketNotificationReceived: function(notification, payload) {
         if (notification === 'CONFIG') {
             this.config = payload.config;
             this.teams = payload.teams;
@@ -40,7 +40,7 @@ module.exports = NodeHelper.create({
         }
     },
 
-    getData() {
+    getData: function() {
         request({ url: this.url }, (error, response, body) => {
             if (response.statusCode === 200) {
                 // eslint-disable-next-line no-new-func
@@ -69,12 +69,12 @@ module.exports = NodeHelper.create({
                     }
                 });
             } else {
-                console.log(`Error getting NHL scores ${response.statusCode}`);
+                console.log('Error getting NHL scores ' + response.statusCode);
             }
         });
     },
 
-    setMode() {
+    setMode: function() {
         let allEnded = true;
         let next = null;
         const now = Date.now();
@@ -127,7 +127,7 @@ module.exports = NodeHelper.create({
         }
     },
 
-    fetchOnLiveState() {
+    fetchOnLiveState: function() {
         if (this.live.state === true) {
             this.getData();
         }

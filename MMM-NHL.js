@@ -77,28 +77,28 @@ Module.register('MMM-NHL', {
         reloadInterval: 30 * 60 * 1000 // every 30 minutes
     },
 
-    getTranslations() {
+    getTranslations: function() {
         return {
             en: 'translations/en.json',
             de: 'translations/de.json'
         };
     },
 
-    getScripts() {
+    getScripts: function() {
         return ['moment.js'];
     },
 
-    getStyles() {
+    getStyles: function() {
         return ['font-awesome.css', 'MMM-NHL.css'];
     },
 
-    start() {
-        Log.info(`Starting module: ${this.name}`);
+    start: function() {
+        Log.info('Starting module: ' + this.name);
         this.sendSocketNotification('CONFIG', { config: this.config, teams: this.teams });
         moment.locale(config.language);
     },
 
-    socketNotificationReceived(notification, payload) {
+    socketNotificationReceived: function(notification, payload) {
         if (notification === 'SCORES') {
             this.scores = payload.scores;
             this.details = payload.details;
@@ -106,9 +106,9 @@ Module.register('MMM-NHL', {
         }
     },
 
-    setRotateInterval() {
+    setRotateInterval: function() {
         if (!this.rotateInterval && this.scores.length > this.config.matches) {
-            this.rotateInterval = setInterval(() => {
+            this.rotateInterval = setInterval(function() {
                 if (this.rotateIndex + this.config.matches >= this.scores.length) {
                     this.rotateIndex = 0;
                 } else {
@@ -123,11 +123,11 @@ Module.register('MMM-NHL', {
         this.updateDom(300);
     },
 
-    getDom() {
+    getDom: function() {
         const wrapper = document.createElement('div');
         const scores = document.createElement('div');
         const header = document.createElement('header');
-        header.innerHTML = `NHL ${this.modes[this.details.t]} ${this.details.y}`;
+        header.innerHTML = 'NHL ' + this.modes[this.details.t] + ' ' + this.details.y;
         scores.appendChild(header);
 
         if (!this.scores) {
@@ -142,7 +142,7 @@ Module.register('MMM-NHL', {
             table.appendChild(this.createLabelRow());
 
             const max = Math.min(this.rotateIndex + this.config.matches, this.scores.length);
-            for (let i = this.rotateIndex; i < max; i += 1) {
+            for (var i = this.rotateIndex; i < max; i += 1) {
                 this.appendDataRow(this.scores[i], table);
             }
 
@@ -154,7 +154,7 @@ Module.register('MMM-NHL', {
         return wrapper;
     },
 
-    createLabelRow() {
+    createLabelRow: function() {
         const labelRow = document.createElement('tr');
 
         const dateLabel = document.createElement('th');
@@ -180,7 +180,7 @@ Module.register('MMM-NHL', {
         return labelRow;
     },
 
-    appendDataRow(data, appendTo) {
+    appendDataRow: function(data, appendTo) {
         const row = document.createElement('tr');
         row.classList.add('row');
 
@@ -197,7 +197,7 @@ Module.register('MMM-NHL', {
                     date.appendChild(third);
                     const time = document.createElement('div');
                     time.classList.add('live');
-                    time.innerHTML = `${data.ts.slice(0, -4)} ${this.translate('TIME_LEFT')}`;
+                    time.innerHTML = data.ts.slice(0, -4) + ' ' + this.translate('TIME_LEFT');
                     date.appendChild(time);
                 } else {
                     date.appendChild(third);
@@ -223,7 +223,7 @@ Module.register('MMM-NHL', {
 
         const homeLogo = document.createElement('td');
         const homeIcon = document.createElement('img');
-        homeIcon.src = this.file(`icons/${this.teams[data.htv]}.png`);
+        homeIcon.src = this.file('icons/' + this.teams[data.htv] + '.png');
         if (!this.config.colored) {
             homeIcon.classList.add('icon');
         }
@@ -244,7 +244,7 @@ Module.register('MMM-NHL', {
 
         const awayLogo = document.createElement('td');
         const awayIcon = document.createElement('img');
-        awayIcon.src = this.file(`icons/${this.teams[data.atv]}.png`);
+        awayIcon.src = this.file('icons/' + this.teams[data.atv] + '.png');
         if (!this.config.colored) {
             awayIcon.classList.add('icon');
         }
