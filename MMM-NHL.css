@@ -5,6 +5,11 @@
 }
 
 .MMM-NHL .icon {
+    width: 37px;
+    height: 25px;
+}
+
+.MMM-NHL .no-color {
     -webkit-filter: grayscale(100%);
     filter: grayscale(100%);
 }

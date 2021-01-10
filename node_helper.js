@@ -7,129 +7,167 @@
 
 /* eslint-env node */
 
-const request = require('request');
-const moment = require('moment-timezone');
+const fetch = require('node-fetch');
+const qs = require('qs');
 const NodeHelper = require('node_helper');
 
+// https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md
+const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
+
 module.exports = NodeHelper.create({
+    games: [],
+    season: {},
+    nextGame: null,
+    liveGames: [],
 
-    url: 'http://live.nhle.com/GameData/RegularSeasonScoreboardv3.jsonp',
-    scores: [],
-    details: {},
-    nextMatch: null,
-    live: {
-        state: false,
-        matches: []
-    },
-
-    start() {
-        console.log(`Starting module helper: ${this.name}`);
-    },
-
-    socketNotificationReceived(notification, payload) {
+    async socketNotificationReceived(notification, payload) {
         if (notification === 'CONFIG') {
             this.config = payload.config;
             this.teams = payload.teams;
-            this.getData();
+
+            await this.initTeams();
+
+            await this.updateSchedule();
             setInterval(() => {
-                this.getData();
+                return this.updateSchedule();
             }, this.config.reloadInterval);
             setInterval(() => {
-                this.fetchOnLiveState();
+                return this.fetchOnLiveState();
             }, 60 * 1000);
         }
     },
 
-    getData() {
-        request({ url: this.url }, (error, response, body) => {
-            if (response.statusCode === 200) {
-                // eslint-disable-next-line no-new-func
-                const f = new Function('loadScoreboard', body);
-                f((data) => {
-                    if (Object.prototype.hasOwnProperty.call(data, 'games')) {
-                        this.scores = [];
-                        for (let i = data.games.length - 1; i >= 0; i -= 1) {
-                            if (!this.config.focus_on ||
-                                this.config.focus_on.includes(this.teams[data.games[i].htv]) ||
-                                this.config.focus_on.includes(this.teams[data.games[i].atv])) {
-                                if (data.games[i].tsc !== 'final' || i === data.games.length - 1) {
-                                    const id = data.games[i].id.toString();
-                                    this.details = {
-                                        y: id.slice(0, 4),
-                                        t: id.slice(4, 6)
-                                    };
-                                }
-                                this.scores.unshift(data.games[i]);
-                            }
-                        }
-                        this.setMode();
-                        this.sendSocketNotification('SCORES', { scores: this.scores, details: this.details });
-                    } else {
-                        console.log('Error no NHL data');
-                    }
-                });
-            } else {
-                console.log(`Error getting NHL scores ${response.statusCode}`);
-            }
-        });
+    async initTeams() {
+        const response = await fetch(`${BASE_URL}/teams`);
+
+        if (!response.ok) {
+            console.error(`Initializing NHL teams failed: ${response.status} ${response.statusText}`);
+
+            return;
+        }
+
+        const {teams} = await response.json();
+
+        this.teamMapping = teams.reduce((mapping, team) => {
+            mapping[team.id] = team.abbreviation;
+
+            return mapping;
+        }, {});
+
+        this.sendSocketNotification('TEAM_MAPPING', this.teamMapping);
     },
 
-    setMode() {
-        let allEnded = true;
-        let next = null;
-        const now = Date.now();
-        const inGame = 'progress';
-        const ended = 'final';
-        for (let i = 0; i < this.scores.length; i += 1) {
-            const temp = this.scores[i];
-            if (this.scores[i].bsc === '') {
-                const time = temp.bs.split(' ')[0].split(':');
-                const mom = moment().tz('America/Los_Angeles');
-                if (temp.ts !== 'TODAY') {
-                    const date = temp.ts.split(' ')[1].split('/');
-                    mom.set('month', date[0]);
-                    mom.set('date', date[1]);
-                    mom.subtract(1, 'month');
-                }
-                mom.set('hour', time[0]);
-                mom.set('minute', time[1]);
-                mom.set('second', 0);
-                if (temp.bs.slice(-2) === 'PM') {
-                    mom.add(12, 'hours');
-                }
-                this.scores[i].starttime = mom;
-                allEnded = false;
-                if (next === null) {
-                    next = this.scores[i];
-                }
-            } else if ((inGame === this.scores[i].bsc || Date.parse(this.scores[i].starttime) > now) &&
-                this.live.matches.indexOf(this.scores[i].id) === -1) {
-                allEnded = false;
-                this.live.matches.push(this.scores[i].id);
-                this.live.state = true;
-            } else if (ended === this.scores[i].bsc && this.live.matches.includes(this.scores[i].id)) {
-                this.live.matches.splice(this.live.matches.indexOf(this.scores[i].id), 1);
-                if (this.live.matches.length === 0) {
-                    this.live.state = false;
-                }
-            }
+    async fetchSchedule() {
+        let date = new Date();
+        date.setDate(date.getDate() - 1);
+        const startDate = date.toISOString().slice(0, 10);
+        date.setDate(date.getDate() + 8);
+        const endDate = date.toISOString().slice(0, 10);
+
+        const query = qs.stringify({
+            startDate,
+            endDate,
+            expand: 'schedule.linescore'
+        });
+
+        const response = await fetch(`${BASE_URL}/schedule?${query}`);
+
+        if (!response.ok) {
+            console.error(`Fetching NHL schedule failed: ${response.status} ${response.statusText}`);
+
+            return;
         }
 
-        if (allEnded === true) {
-            this.nextMatch = null;
+        const {dates} = await response.json();
+
+        return dates.map(date => date.games).flat();
+    },
+
+    filterGameByFocus(game) {
+        const focus = this.config.focus_on;
+        if (!focus) {
+            return true;
         }
 
-        if ((next !== null && this.nextMatch === null && allEnded === false) || this.live.state === true) {
-            this.nextMatch = {
-                id: next.id,
-                time: next.starttime
+        const homeTeam = this.teamMapping[game.teams.home.team.id];
+        const awayTeam = this.teamMapping[game.teams.away.team.id];
+
+        return focus.includes(homeTeam) || focus.includes(awayTeam);
+    },
+
+    computeSeasonDetails(schedule) {
+        const game = schedule.find(game => game.status.abstractGameState !== 'Final') || schedule[schedule.length - 1];
+
+        if (game) {
+            return {
+                year: `${game.season.slice(2, 4)}/${game.season.slice(6, 8)}`,
+                mode: game.gameType
             };
         }
+
+        const year = new Date().getFullYear();
+        const currentYear = year.toString().slice(-2);
+        const nextYear = (year + 1).toString().slice(-2);
+
+        return {
+            year: `${currentYear}/${nextYear}`,
+            mode: 'PR'
+        };
+    },
+
+    parseGame(game = {}) {
+        return {
+            id: game.gamePk,
+            timestamp: game.gameDate,
+            status: {
+                abstract: game.status?.abstractGameState,
+                detailed: game.status?.detailedState
+            },
+            teams: {
+                away: {
+                    id: game.teams?.away?.team?.id,
+                    name: game.teams?.away?.team?.name,
+                    short: this.teamMapping[game.teams?.away?.team?.id],
+                    score: game.teams?.away?.score
+                },
+                home: {
+                    id: game.teams?.home?.team?.id,
+                    name: game.teams?.home?.team?.name,
+                    short: this.teamMapping[game.teams?.home?.team?.id],
+                    score: game.teams?.home?.score
+                }
+            },
+            live: {
+                period: game.linescore?.currentPeriodOrdinal,
+                timeRemaining: game.linescore?.currentPeriodTimeRemaining
+            }
+        };
+    },
+
+    setNextGame(games) {
+        this.nextGame = games.find(game => game?.status?.abstract === 'Preview');
+        this.liveGames = games.filter(game => game?.status?.abstract === 'Live');
+    },
+
+    async updateSchedule() {
+        const schedule = await this.fetchSchedule();
+
+        const season = this.computeSeasonDetails(schedule);
+
+        const focusSchedule = schedule.filter(this.filterGameByFocus.bind(this));
+
+        const games = focusSchedule.map(this.parseGame.bind(this));
+
+        this.setNextGame(games);
+        this.sendSocketNotification('SCHEDULE', {games, season});
     },
 
     fetchOnLiveState() {
-        if (this.live.state === true) {
-            this.getData();
+        const hasLiveGames = this.liveGames.length > 0;
+        const gameAboutToStart = this.nextGame && new Date() > new Date(this.nextGame.timestamp);
+
+        if (hasLiveGames || gameAboutToStart) {
+            return this.updateSchedule();
         }
     }
 });
