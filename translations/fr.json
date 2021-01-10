@@ -1,0 +1,16 @@
+{
+  "LOADING": "Chargement...",
+  "HOME": "Domicile",
+  "AWAY": "Visiteur",
+  "PRE_GAME": "Warm Up",
+  "1ST_PERIOD": "1ere Period",
+  "2ND_PERIOD": "2nd Period",
+  "3RD_PERIOD": "3eme Period",
+  "OVER_TIME": "Prolongation",
+  "SHOOTOUT": "Tir au but",
+  "FINAL": "Final",
+  "FINAL_OVERTIME": "Final Apres prolongation",
+  "FINAL_SHOOTOUT": "Final Apres tir au but",
+  "UNKNOWN": "Inconnu",
+  "TIME_LEFT": "Temps restant"
+}

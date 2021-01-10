@@ -42,7 +42,8 @@ Module.register('MMM-NHL', {
     getTranslations() {
         return {
             en: 'translations/en.json',
-            de: 'translations/de.json'
+            de: 'translations/de.json',
+            fr: 'translations/fr.json'
         };
     },
 
