@@ -24,11 +24,12 @@ Module.register('MMM-NHL', {
         '1st': '1ST_PERIOD',
         '2nd': '2ND_PERIOD',
         '3rd': '3RD_PERIOD',
-        OT: 'OVER_TIME',
-        SO: 'SHOOTOUT',
-        FINAL: 'FINAL',
+        'OT': 'OVER_TIME',
+        'SO': 'SHOOTOUT',
+        'FINAL': 'FINAL',
         'FINAL OT': 'FINAL_OVERTIME',
-        'FINAL SO': 'FINAL_SHOOTOUT'
+        'FINAL SO': 'FINAL_SHOOTOUT',
+        'PPD': 'PPD'
     },
 
     teams: {
@@ -74,7 +75,8 @@ Module.register('MMM-NHL', {
         matches: 6,
         format: 'ddd h:mm',
         rotateInterval: 20 * 1000, // every 20 seconds
-        reloadInterval: 30 * 60 * 1000 // every 30 minutes
+        reloadInterval: 30 * 60 * 1000, // every 30 minutes
+        gameTimeReloadInterval: 60 * 1000 // every 60 seocnds
     },
 
     getTranslations() {
@@ -203,6 +205,8 @@ Module.register('MMM-NHL', {
                     date.appendChild(third);
                 }
             }
+        } else if (data.bsc === '' && data.bs === 'PPD') {
+            date.innerHTML = this.translate(this.states[data.bs]);
         } else if (data.bsc === '' && Object.prototype.hasOwnProperty.call(data, 'starttime')) {
             date.innerHTML = moment(data.starttime).format(this.config.format);
         } else if (data.bsc === 'final') {

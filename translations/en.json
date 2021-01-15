@@ -3,14 +3,15 @@
   "HOME": "Home",
   "AWAY": "Away",
   "PRE_GAME": "Warm Up",
-  "1ST_PERIOD": "1st Period",
-  "2ND_PERIOD": "2nd Period",
-  "3RD_PERIOD": "3rd Period",
-  "OVER_TIME": "Over Time",
+  "1ST_PERIOD": "1st",
+  "2ND_PERIOD": "2nd",
+  "3RD_PERIOD": "3rd",
+  "OVER_TIME": "OT",
   "SHOOTOUT": "Shootout",
   "FINAL": "Final",
-  "FINAL_OVERTIME": "Final Over Time",
-  "FINAL_SHOOTOUT": "Final Shootout",
+  "FINAL_OVERTIME": "Final OT",
+  "FINAL_SHOOTOUT": "Final SO",
   "UNKNOWN": "Unknown",
-  "TIME_LEFT": "left"
+  "TIME_LEFT": "left",
+  "PPD": "PPD"
 }

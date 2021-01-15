@@ -12,7 +12,7 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 ## Installation
 
 1. Clone this repo into `~/MagicMirror/modules` directory.
-1. Configure your `~/MagicMirror/config/config.js`:
+2. Configure your `~/MagicMirror/config/config.js`:
 
     ```
     {
@@ -24,8 +24,6 @@ National Hockey League Module for MagicMirror<sup>2</sup>
     }
     ```
 
-1. Run command `npm install --productive` in `~/MagicMirror/modules/MMM-NHL` directory.
-
 ## Config Options
 
 | **Option** | **Default** | **Description** |
@@ -36,3 +34,4 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 | `format` | `'ddd h:mm'` | In which format the date should be displayed. [All Options](http://momentjs.com/docs/#/displaying/format/) |
 | `rotateInterval` | `20000` (20 secs) | How often should be rotated the matches in the list. |
 | `reloadInterval` | `1800000` (30 mins) | How often should the data be fetched. |
+| `gameTimeReloadInterval` | `60000` (60 seconds) | How often should the data be fetched when games are in progress. |
