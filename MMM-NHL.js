@@ -26,6 +26,7 @@ Module.register('MMM-NHL', {
         '3rd': '3RD_PERIOD',
         'OT': 'OVER_TIME',
         'SO': 'SHOOTOUT',
+        'SHOOTOUT': 'SHOOTOUT',
         'FINAL': 'FINAL',
         'FINAL OT': 'FINAL_OVERTIME',
         'FINAL SO': 'FINAL_SHOOTOUT',
@@ -72,6 +73,7 @@ Module.register('MMM-NHL', {
     defaults: {
         colored: false,
         focus_on: false,
+        condensed: false,
         matches: 6,
         format: 'ddd h:mm',
         rotateInterval: 20 * 1000, // every 20 seconds
@@ -134,7 +136,7 @@ Module.register('MMM-NHL', {
 
         if (!this.scores) {
             const text = document.createElement('div');
-            text.innerHTML = this.translate('LOADING');
+            text.innerHTML = this.nhlTranslate('LOADING');
             text.classList.add('dimmed', 'light');
             scores.appendChild(text);
         } else {
@@ -156,6 +158,13 @@ Module.register('MMM-NHL', {
         return wrapper;
     },
 
+    nhlTranslate(key) {
+        if (this.config.condensed)
+            return this.translate(`${key}-Condensed`) || this.translate(key);
+        else
+            return this.translate(key);
+    },
+
     createLabelRow() {
         const labelRow = document.createElement('tr');
 
@@ -166,7 +175,7 @@ Module.register('MMM-NHL', {
         labelRow.appendChild(dateLabel);
 
         const homeLabel = document.createElement('th');
-        homeLabel.innerHTML = this.translate('HOME');
+        homeLabel.innerHTML = this.nhlTranslate('HOME');
         homeLabel.setAttribute('colspan', 3);
         labelRow.appendChild(homeLabel);
 
@@ -175,7 +184,7 @@ Module.register('MMM-NHL', {
         labelRow.appendChild(vsLabel);
 
         const awayLabel = document.createElement('th');
-        awayLabel.innerHTML = this.translate('AWAY');
+        awayLabel.innerHTML = this.nhlTranslate('AWAY');
         awayLabel.setAttribute('colspan', 3);
         labelRow.appendChild(awayLabel);
 
@@ -189,31 +198,32 @@ Module.register('MMM-NHL', {
         const date = document.createElement('td');
         if (data.bsc === 'progress') {
             if (data.ts === 'PRE GAME') {
-                date.innerHTML = this.translate('PRE_GAME');
+                date.innerHTML = this.nhlTranslate('PRE_GAME');
                 date.classList.add('dimmed');
             } else if (['1st', '2nd', '3rd'].includes(data.ts.slice(-3))) {
                 const third = document.createElement('div');
-                third.innerHTML = this.translate(this.states[data.ts.slice(-3)]);
+                third.innerHTML = this.nhlTranslate(this.states[data.ts.slice(-3)]);
                 if (data.ts.slice(0, 3) !== 'END') {
                     third.classList.add('live');
                     date.appendChild(third);
                     const time = document.createElement('div');
                     time.classList.add('live');
-                    time.innerHTML = `${data.ts.slice(0, -4)} ${this.translate('TIME_LEFT')}`;
+                    time.innerHTML = `${data.ts.slice(0, -4)} ${this.nhlTranslate('TIME_LEFT')}`;
                     date.appendChild(time);
                 } else {
                     date.appendChild(third);
                 }
             }
         } else if (data.bsc === '' && data.bs === 'PPD') {
-            date.innerHTML = this.translate(this.states[data.bs]);
+            date.innerHTML = this.nhlTranslate(this.states[data.bs]);
+            date.classList.add('dimmed');
         } else if (data.bsc === '' && Object.prototype.hasOwnProperty.call(data, 'starttime')) {
             date.innerHTML = moment(data.starttime).format(this.config.format);
         } else if (data.bsc === 'final') {
-            date.innerHTML = this.translate(this.states[data.bs]);
+            date.innerHTML = this.nhlTranslate(this.states[data.bs]);
             date.classList.add('dimmed');
         } else {
-            date.innerHTML = this.translate('UNKNOWN');
+            date.innerHTML = this.nhlTranslate('UNKNOWN');
             date.classList.add('dimmed');
         }
         row.appendChild(date);

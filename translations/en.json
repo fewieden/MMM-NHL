@@ -13,5 +13,11 @@
   "FINAL_SHOOTOUT": "Final Shootout",
   "UNKNOWN": "Unknown",
   "TIME_LEFT": "left",
-  "PPD": "PPD"
+  "PPD": "Postponed",
+  "OVER_TIME-Condensed": "OT",
+  "SHOOTOUT-Condensed": "SO",
+  "FINAL-Condensed": "Final",
+  "FINAL_OVERTIME-Condensed": "Final OT",
+  "FINAL_SHOOTOUT-Condensed": "Final SO",
+  "TIME_LEFT-Condensed": ""
 }
