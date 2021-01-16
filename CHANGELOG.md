@@ -3,8 +3,13 @@
 ## [1.0.2]
 * Fixed Vegas Icon
 * Removed npm install from README (not needed and is huge)
-* Added option `gameTimeReloadInterval` for quicker reloads during games
+* Added options:
+     `gameTimeReloadInterval` for quicker reloads during games
+     `showNames` can toggle team names
+     `showLogos` can toggle team logos
+     `condensed` use shorter names (OT instead of Overtime)
 * Support PPD games (Postponed)
+
 
 ## [1.0.1]
 

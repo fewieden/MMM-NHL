@@ -35,3 +35,6 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 | `rotateInterval` | `20000` (20 secs) | How often should be rotated the matches in the list. |
 | `reloadInterval` | `1800000` (30 mins) | How often should the data be fetched. |
 | `gameTimeReloadInterval` | `60000` (60 seconds) | How often should the data be fetched when games are in progress. |
+| `condensed` | `false` | Show smaller text if true.  OT instead of Overtime for example. |
+| `showLogos` | `true` | Show team logos. |
+| `showNames` | `true` | Show team names. |
