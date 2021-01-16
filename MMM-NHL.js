@@ -78,7 +78,9 @@ Module.register('MMM-NHL', {
         format: 'ddd h:mm',
         rotateInterval: 20 * 1000, // every 20 seconds
         reloadInterval: 30 * 60 * 1000, // every 30 minutes
-        gameTimeReloadInterval: 60 * 1000 // every 60 seocnds
+        gameTimeReloadInterval: 60 * 1000, // every 60 seconds
+        showLogos: true,
+        showNames: true
     },
 
     getTranslations() {
@@ -159,10 +161,13 @@ Module.register('MMM-NHL', {
     },
 
     nhlTranslate(key) {
-        if (this.config.condensed)
-            return this.translate(`${key}-Condensed`) || this.translate(key);
-        else
-            return this.translate(key);
+        if (this.config.condensed) {
+            const newKey = `${key}-Condensed`;
+            const result = this.translate(newKey, undefined);
+            if (result !== newKey)
+                return result;
+        }
+        return this.translate(key);
     },
 
     createLabelRow() {
@@ -230,18 +235,22 @@ Module.register('MMM-NHL', {
 
         const homeTeam = document.createElement('td');
         homeTeam.classList.add('align-right');
-        const homeTeamSpan = document.createElement('span');
-        homeTeamSpan.innerHTML = this.teams[data.htv];
-        homeTeam.appendChild(homeTeamSpan);
+        if (this.config.showNames) {
+            const homeTeamSpan = document.createElement('span');
+            homeTeamSpan.innerHTML = this.teams[data.htv];
+            homeTeam.appendChild(homeTeamSpan);
+        }
         row.appendChild(homeTeam);
 
         const homeLogo = document.createElement('td');
-        const homeIcon = document.createElement('img');
-        homeIcon.src = this.file(`icons/${this.teams[data.htv]}.png`);
-        if (!this.config.colored) {
-            homeIcon.classList.add('icon');
+        if (this.config.showLogos) {
+            const homeIcon = document.createElement('img');
+            homeIcon.src = this.file(`icons/${this.teams[data.htv]}.png`);
+            if (!this.config.colored) {
+                homeIcon.classList.add('icon');
+            }
+            homeLogo.appendChild(homeIcon);
         }
-        homeLogo.appendChild(homeIcon);
         row.appendChild(homeLogo);
 
         const homeScore = document.createElement('td');
@@ -257,19 +266,23 @@ Module.register('MMM-NHL', {
         row.appendChild(awayScore);
 
         const awayLogo = document.createElement('td');
-        const awayIcon = document.createElement('img');
-        awayIcon.src = this.file(`icons/${this.teams[data.atv]}.png`);
-        if (!this.config.colored) {
-            awayIcon.classList.add('icon');
+        if (this.config.showLogos) {
+            const awayIcon = document.createElement('img');
+            awayIcon.src = this.file(`icons/${this.teams[data.atv]}.png`);
+            if (!this.config.colored) {
+                awayIcon.classList.add('icon');
+            }
+            awayLogo.appendChild(awayIcon);
         }
-        awayLogo.appendChild(awayIcon);
         row.appendChild(awayLogo);
 
         const awayTeam = document.createElement('td');
         awayTeam.classList.add('align-left');
-        const awayTeamSpan = document.createElement('span');
-        awayTeamSpan.innerHTML = this.teams[data.atv];
-        awayTeam.appendChild(awayTeamSpan);
+        if (this.config.showNames) {
+            const awayTeamSpan = document.createElement('span');
+            awayTeamSpan.innerHTML = this.teams[data.atv];
+            awayTeam.appendChild(awayTeamSpan);
+        }
         row.appendChild(awayTeam);
 
         appendTo.appendChild(row);
