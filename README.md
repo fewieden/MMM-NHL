@@ -2,6 +2,10 @@
 
 National Hockey League Module for MagicMirror<sup>2</sup>
 
+## Screenshots
+![Screenshot 1](/images/screenshot1.png?raw=true)
+![Screenshot 2](/images/screenshot2.png?raw=true)
+
 ## Dependencies
 
 * An installation of [MagicMirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
