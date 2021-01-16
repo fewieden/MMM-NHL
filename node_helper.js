@@ -36,7 +36,7 @@ module.exports = NodeHelper.create({
             }, this.config.reloadInterval);
             setInterval(() => {
                 this.fetchOnLiveState();
-            }, 60 * 1000);
+            }, this.config.gameTimeReloadInterval);
         }
     },
 
