@@ -32,7 +32,7 @@ module.exports = NodeHelper.create({
             }, this.config.reloadInterval);
             setInterval(() => {
                 return this.fetchOnLiveState();
-            }, 60 * 1000);
+            }, this.config.liveReloadInterval);
         }
     },
 

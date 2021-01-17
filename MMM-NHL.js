@@ -37,6 +37,7 @@ Module.register('MMM-NHL', {
         matches: 6,
         rotateInterval: 20 * 1000,
         reloadInterval: 30 * 60 * 1000,
+        liveReloadInterval: 60 * 1000,
         daysInPast: 1,
         daysAhead: 7
     },
