@@ -7,6 +7,8 @@
 * Nunjuck templates
 * French translations thanks to [matlem037](https://github.com/matlem037)
 * Dependency `node-fetch`
+* Config option `daysInPast`
+* Config option `daysAhead`
 
 ### Changed
 

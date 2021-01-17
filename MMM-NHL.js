@@ -35,8 +35,10 @@ Module.register('MMM-NHL', {
         colored: false,
         focus_on: false,
         matches: 6,
-        rotateInterval: 20 * 1000, // every 20 seconds
-        reloadInterval: 30 * 60 * 1000 // every 30 minutes
+        rotateInterval: 20 * 1000,
+        reloadInterval: 30 * 60 * 1000,
+        daysInPast: 1,
+        daysAhead: 7
     },
 
     getTranslations() {
@@ -78,6 +80,7 @@ Module.register('MMM-NHL', {
             this.games = payload.games;
             this.season = payload.season;
             this.setRotateInterval();
+            console.log(this.games);
         }
     },
 

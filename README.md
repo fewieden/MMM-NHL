@@ -33,3 +33,5 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 | `matches` | `6` | Max number of matches displaying simultaneously. |
 | `rotateInterval` | `20000` (20 secs) | How often should be rotated the matches in the list. |
 | `reloadInterval` | `1800000` (30 mins) | How often should the data be fetched. |
+| `daysInPast` | `1` | How many days should a game be displayed after it is finished. |
+| `daysAhead` | `7` | How many days should a game be displayed before it starts. |

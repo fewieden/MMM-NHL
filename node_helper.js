@@ -58,16 +58,12 @@ module.exports = NodeHelper.create({
 
     async fetchSchedule() {
         let date = new Date();
-        date.setDate(date.getDate() - 1);
+        date.setDate(date.getDate() - this.config.daysInPast);
         const startDate = date.toISOString().slice(0, 10);
-        date.setDate(date.getDate() + 8);
+        date.setDate(date.getDate() + this.config.daysInPast + this.config.daysAhead);
         const endDate = date.toISOString().slice(0, 10);
 
-        const query = qs.stringify({
-            startDate,
-            endDate,
-            expand: 'schedule.linescore'
-        });
+        const query = qs.stringify({startDate, endDate, expand: 'schedule.linescore'});
 
         const response = await fetch(`${BASE_URL}/schedule?${query}`);
 
