@@ -79,8 +79,6 @@ Module.register('MMM-NHL', {
             this.season = payload.season;
             this.setRotateInterval();
         }
-
-        console.log(payload);
     },
 
     setRotateInterval() {
@@ -120,7 +118,7 @@ Module.register('MMM-NHL', {
                     weekday: 'short', hour: '2-digit', minute: '2-digit'
                 }).format(start);
             } else if (game.status.abstract === 'Live' && game.live.period) {
-                return this.translate('TIME_LEFT', game.live.timeRemaining);
+                return `${game.live.period} ${game.live.timeRemaining}`;
             }
 
             return this.translate(game.status.abstract);

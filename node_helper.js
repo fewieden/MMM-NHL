@@ -11,7 +11,6 @@ const fetch = require('node-fetch');
 const qs = require('querystring');
 const NodeHelper = require('node_helper');
 
-// https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md
 const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
 
 module.exports = NodeHelper.create({

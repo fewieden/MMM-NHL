@@ -6,8 +6,7 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 
 * An installation of [MagicMirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
 * npm
-* [request](https://www.npmjs.com/package/request)
-* [moment-timezone](https://www.npmjs.com/package/moment-timezone)
+* [node-fetch](https://www.npmjs.com/package/node-fetch)
 
 ## Installation
 
@@ -23,8 +22,7 @@ National Hockey League Module for MagicMirror<sup>2</sup>
         }
     }
     ```
-
-1. Run command `npm install --productive` in `~/MagicMirror/modules/MMM-NHL` directory.
+1. Run command `npm i --production` in `~/MagicMirror/modules/MMM-NHL` directory.
 
 ## Config Options
 
@@ -33,6 +31,5 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 | `colored` | `false` | Remove black/white filter of logos. |
 | `focus_on` | `false` | Display only matches with teams of this array e.g. `['VAN', 'MTL', 'BOS']`. |
 | `matches` | `6` | Max number of matches displaying simultaneously. |
-| `format` | `'ddd h:mm'` | In which format the date should be displayed. [All Options](http://momentjs.com/docs/#/displaying/format/) |
 | `rotateInterval` | `20000` (20 secs) | How often should be rotated the matches in the list. |
 | `reloadInterval` | `1800000` (30 mins) | How often should the data be fetched. |
