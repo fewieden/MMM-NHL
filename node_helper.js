@@ -8,7 +8,7 @@
 /* eslint-env node */
 
 const fetch = require('node-fetch');
-const qs = require('qs');
+const qs = require('querystring');
 const NodeHelper = require('node_helper');
 
 // https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md
