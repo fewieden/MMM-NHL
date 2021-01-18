@@ -39,7 +39,9 @@ Module.register('MMM-NHL', {
         reloadInterval: 30 * 60 * 1000,
         liveReloadInterval: 60 * 1000,
         daysInPast: 1,
-        daysAhead: 7
+        daysAhead: 7,
+        showNames: true,
+        showLogos: true
     },
 
     getTranslations() {
@@ -65,7 +67,8 @@ Module.register('MMM-NHL', {
             season: this.season,
             games: this.games,
             rotateIndex: this.rotateIndex,
-            maxGames: Math.min(this.games.length, this.rotateIndex + this.config.matches)
+            maxGames: Math.min(this.games.length, this.rotateIndex + this.config.matches),
+            config: this.config
         };
     },
 

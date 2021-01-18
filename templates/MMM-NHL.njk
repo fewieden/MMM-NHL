@@ -15,13 +15,29 @@
             {% for index in range(rotateIndex, maxGames) %}
                 <tr>
                     <td>{{ games[index] | calendar }}</td>
-                    <td class="align-right">{{ games[index].teams.home.short }}</td>
-                    <td><img class="icon {{ "no-color" if not config.colored }}" src="https://assets.nhle.com/logos/nhl/svg/{{ games[index].teams.home.short }}_light.svg"/></td>
+                    <td class="align-right">
+                    {% if config.showNames %}
+                        {{ games[index].teams.home.short }}
+                    {% endif %}
+                    </td>
+                    <td>
+                    {% if config.showLogos %}
+                        <img class="icon {{ "no-color" if not config.colored }}" src="https://assets.nhle.com/logos/nhl/svg/{{ games[index].teams.home.short }}_light.svg"/>
+                    {% endif %}
+                    </td>
                     <td>{{ games[index].teams.home.score }}</td>
                     <td>:</td>
                     <td>{{ games[index].teams.away.score }}</td>
-                    <td><img class="icon {{ "no-color" if not config.colored }}" src="https://assets.nhle.com/logos/nhl/svg/{{ games[index].teams.away.short }}_light.svg"/></td>
-                    <td class="align-left">{{ games[index].teams.away.short }}</td>
+                    <td>
+                    {% if config.showLogos %}
+                        <img class="icon {{ "no-color" if not config.colored }}" src="https://assets.nhle.com/logos/nhl/svg/{{ games[index].teams.away.short }}_light.svg"/>
+                    {% endif %}
+                    </td>
+                    <td class="align-left">
+                    {% if config.showNames %}
+                        {{ games[index].teams.away.short }}
+                    {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
