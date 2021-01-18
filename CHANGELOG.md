@@ -9,6 +9,7 @@
 * Dependency `node-fetch`
 * Config option `daysInPast`
 * Config option `daysAhead`
+* Github actions (linting)
 
 ### Changed
 
@@ -20,6 +21,7 @@
 ### Removed
 
 * Config option `format`, instead rendering information based on locale.
+* Travis integration
 * Dependency `moment-timezone`
 * Dependency `request`
 * Local team logos
