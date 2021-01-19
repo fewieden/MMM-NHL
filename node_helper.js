@@ -60,7 +60,7 @@ module.exports = NodeHelper.create({
         let date = new Date();
         date.setDate(date.getDate() - this.config.daysInPast);
         const startDate = date.toISOString().slice(0, 10);
-        date.setDate(date.getDate() + this.config.daysAhead);
+        date.setDate(date.getDate() +  this.config.daysInPast + this.config.daysAhead);
         const endDate = date.toISOString().slice(0, 10);
 
         const query = qs.stringify({startDate, endDate, expand: 'schedule.linescore'});
