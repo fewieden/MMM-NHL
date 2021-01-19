@@ -1,5 +1,5 @@
 {% if loading %}
-    <div class="dimmed light">{{ "LOADING" | translate }}</div>
+    <div class="dimmed light">{{ "LOADING" | translate | safe }}</div>
 {% else %}
     <header>NHL {{ modes[season.mode] | translate }} {{ season.year }}</header>
     <table class="small table">
