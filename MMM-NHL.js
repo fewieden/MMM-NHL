@@ -106,7 +106,7 @@ Module.register('MMM-NHL', {
     },
 
     addFilters() {
-        this.nunjucksEnvironment().addFilter('calendar', (game) => {
+        this.nunjucksEnvironment().addFilter('calendar', game => {
             if (game.status.detailed === 'Pre-Game') {
                 return this.translate('PRE_GAME');
             } else if (game.status.abstract === 'Preview') {
