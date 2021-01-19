@@ -139,9 +139,16 @@ module.exports = NodeHelper.create({
         this.liveGames = games.filter(game => game?.status?.abstract === 'Live');
     },
 
+    sort(game1, game2) {
+        if(game1.gameDate == game2.gameDate) {
+            return game1.id > game2.id ? 1 : -1;
+        }
+        return game1.gameDate > game2.gameDate ? 1 : -1;
+    },
+
     async updateSchedule() {
         const schedule = await this.fetchSchedule();
-
+        schedule.sort(sort);
         const season = this.computeSeasonDetails(schedule);
 
         const focusSchedule = schedule.filter(this.filterGameByFocus.bind(this));

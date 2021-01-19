@@ -11,5 +11,6 @@
   "FINAL_OVERTIME": "Final Apres prolongation",
   "FINAL_SHOOTOUT": "Final Apres tir au but",
   "UNKNOWN": "Inconnu",
-  "TIME_LEFT": "Temps restant"
+  "TIME_LEFT": "Temps restant",
+  "Postponed": "REM"
 }
