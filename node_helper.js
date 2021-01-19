@@ -27,12 +27,8 @@ module.exports = NodeHelper.create({
             await this.initTeams();
 
             await this.updateSchedule();
-            setInterval(() => {
-                return this.updateSchedule();
-            }, this.config.reloadInterval);
-            setInterval(() => {
-                return this.fetchOnLiveState();
-            }, this.config.liveReloadInterval);
+            setInterval(() => this.updateSchedule(), this.config.reloadInterval);
+            setInterval(() => this.fetchOnLiveState(), this.config.liveReloadInterval);
         }
     },
 
@@ -57,20 +53,18 @@ module.exports = NodeHelper.create({
     },
 
     async fetchSchedule() {
-        let date = new Date();
+        const date = new Date();
         date.setDate(date.getDate() - this.config.daysInPast);
         const startDate = date.toISOString().slice(0, 10);
-        date.setDate(date.getDate() +  this.config.daysInPast + this.config.daysAhead);
+        date.setDate(date.getDate() + this.config.daysInPast + this.config.daysAhead);
         const endDate = date.toISOString().slice(0, 10);
 
         const query = qs.stringify({startDate, endDate, expand: 'schedule.linescore'});
         const url = `${BASE_URL}/schedule?${query}`;
-        console.log(`MMM-NHL Fetching:${BASE_URL}/schedule?${query}`);
         const response = await fetch(url);
 
         if (!response.ok) {
-            console.error(`Fetching NHL schedule failed: ${response.status} ${response.statusText}`);
-
+            console.error(`Fetching NHL schedule failed: ${response.status} ${response.statusText}. Url: ${url}`);
             return;
         }
 

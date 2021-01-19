@@ -5,8 +5,6 @@
  * MIT Licensed.
  */
 
-/* global Module Log config */
-
 Module.register('MMM-NHL', {
     modes: {
         PR: 'Pre-season',
@@ -75,7 +73,7 @@ Module.register('MMM-NHL', {
     start() {
         Log.info(`Starting module: ${this.name}`);
         this.addFilters();
-        this.sendSocketNotification('CONFIG', { config: this.config });
+        this.sendSocketNotification('CONFIG', {config: this.config});
     },
 
     socketNotificationReceived(notification, payload) {
@@ -94,7 +92,7 @@ Module.register('MMM-NHL', {
                 if (this.rotateIndex + this.config.matches >= this.games.length) {
                     this.rotateIndex = 0;
                 } else {
-                    this.rotateIndex = this.rotateIndex + this.config.matches;
+                    this.rotateIndex += this.config.matches;
                 }
                 this.updateDom(300);
             }, this.config.rotateInterval);
@@ -107,7 +105,7 @@ Module.register('MMM-NHL', {
     },
 
     addFilters() {
-        this.nunjucksEnvironment().addFilter('calendar', (game) => {
+        this.nunjucksEnvironment().addFilter('calendar', game => {
             if (game.status.detailed === 'Pre-Game') {
                 return this.translate('PRE_GAME');
             } else if (game.status.abstract === 'Preview') {
