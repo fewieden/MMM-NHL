@@ -4,8 +4,7 @@
  * By fewieden https://github.com/fewieden/MMM-NHL
  * MIT Licensed.
  */
-
-/* global Module Log config */
+/* global config */
 
 Module.register('MMM-NHL', {
     modes: {
@@ -37,8 +36,11 @@ Module.register('MMM-NHL', {
         matches: 6,
         rotateInterval: 20 * 1000,
         reloadInterval: 30 * 60 * 1000,
+        liveReloadInterval: 60 * 1000,
         daysInPast: 1,
-        daysAhead: 7
+        daysAhead: 7,
+        showNames: true,
+        showLogos: true
     },
 
     getTranslations() {
@@ -64,14 +66,15 @@ Module.register('MMM-NHL', {
             season: this.season,
             games: this.games,
             rotateIndex: this.rotateIndex,
-            maxGames: Math.min(this.games.length, this.rotateIndex + this.config.matches)
+            maxGames: Math.min(this.games.length, this.rotateIndex + this.config.matches),
+            config: this.config
         };
     },
 
     start() {
         Log.info(`Starting module: ${this.name}`);
         this.addFilters();
-        this.sendSocketNotification('CONFIG', { config: this.config });
+        this.sendSocketNotification('CONFIG', {config: this.config});
     },
 
     socketNotificationReceived(notification, payload) {
@@ -90,7 +93,7 @@ Module.register('MMM-NHL', {
                 if (this.rotateIndex + this.config.matches >= this.games.length) {
                     this.rotateIndex = 0;
                 } else {
-                    this.rotateIndex = this.rotateIndex + this.config.matches;
+                    this.rotateIndex += this.config.matches;
                 }
                 this.updateDom(300);
             }, this.config.rotateInterval);
@@ -103,7 +106,7 @@ Module.register('MMM-NHL', {
     },
 
     addFilters() {
-        this.nunjucksEnvironment().addFilter('calendar', (game) => {
+        this.nunjucksEnvironment().addFilter('calendar', game => {
             if (game.status.detailed === 'Pre-Game') {
                 return this.translate('PRE_GAME');
             } else if (game.status.abstract === 'Preview') {

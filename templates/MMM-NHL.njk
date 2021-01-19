@@ -1,27 +1,43 @@
 {% if loading %}
-    <div class="dimmed light">{{ "LOADING" | translate }}</div>
+    <div class="dimmed light">{{ "LOADING" | translate | safe }}</div>
 {% else %}
     <header>NHL {{ modes[season.mode] | translate }} {{ season.year }}</header>
     <table class="small table">
         <thead>
             <tr>
                 <th><i class="fa fa-calendar"></i></th>
-                <th colspan="3">{{ "HOME" | translate }}</th>
+                <th colspan="{{ 1 + (1 if config.showNames else 0) + (1 if config.showLogos else 0) }}">{{ "HOME" | translate }}</th>
                 <th></th>
-                <th colspan="3">{{ "AWAY" | translate }}</th>
+                <th colspan="{{ 1 + (1 if config.showNames else 0) + (1 if config.showLogos else 0) }}"">{{ "AWAY" | translate }}</th>
             </tr>
         </thead>
         <tbody>
             {% for index in range(rotateIndex, maxGames) %}
                 <tr>
                     <td>{{ games[index] | calendar }}</td>
-                    <td class="align-right">{{ games[index].teams.home.short }}</td>
-                    <td><img class="icon {{ "no-color" if not config.colored }}" src="https://assets.nhle.com/logos/nhl/svg/{{ games[index].teams.home.short }}_light.svg"/></td>
+                    {% if config.showNames %}
+                    <td class="align-right">
+                        {{ games[index].teams.home.short }}
+                    </td>
+                    {% endif %}
+                    {% if config.showLogos %}
+                    <td>
+                        <img class="icon {{ "no-color" if not config.colored }}" src="https://assets.nhle.com/logos/nhl/svg/{{ games[index].teams.home.short }}_light.svg"/>
+                    </td>
+                    {% endif %}
                     <td>{{ games[index].teams.home.score }}</td>
                     <td>:</td>
                     <td>{{ games[index].teams.away.score }}</td>
-                    <td><img class="icon {{ "no-color" if not config.colored }}" src="https://assets.nhle.com/logos/nhl/svg/{{ games[index].teams.away.short }}_light.svg"/></td>
-                    <td class="align-left">{{ games[index].teams.away.short }}</td>
+                    {% if config.showLogos %}
+                    <td>
+                        <img class="icon {{ "no-color" if not config.colored }}" src="https://assets.nhle.com/logos/nhl/svg/{{ games[index].teams.away.short }}_light.svg"/>
+                    </td>
+                    {% endif %}
+                    {% if config.showNames %}
+                    <td class="align-left">
+                        {{ games[index].teams.away.short }}
+                    </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
