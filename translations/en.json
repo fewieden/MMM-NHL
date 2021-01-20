@@ -11,5 +11,6 @@
   "FINAL_OVERTIME": "Final OT",
   "FINAL_SHOOTOUT": "Final SO",
   "UNKNOWN": "Unknown",
-  "TIME_LEFT": "left"
+  "TIME_LEFT": "left",
+  "Postponed": "PPD"
 }
