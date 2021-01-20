@@ -13,7 +13,7 @@
 * Config option `showNames`
 * Config option `showLogos`
 * Support for game status `postponed`
-* Github actions (linting)
+* Github actions (linting and changelog enforcer)
 
 ### Changed
 
