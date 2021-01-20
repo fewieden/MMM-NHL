@@ -35,3 +35,6 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 | `reloadInterval` | `1800000` (30 mins) | How often should the data be fetched. |
 | `daysInPast` | `1` | How many days should a game be displayed after it is finished. |
 | `daysAhead` | `7` | How many days should a game be displayed before it starts. |
+| `liveReloadInterval` | `60000 (1 min)` | How often should the data be fetched during a live game. |
+| `showNames` | `true` | Should team names be displayed? |
+| `showLogos` | `true` | Should team logos be displayed? |

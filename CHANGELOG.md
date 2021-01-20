@@ -9,6 +9,10 @@
 * Dependency `node-fetch`
 * Config option `daysInPast`
 * Config option `daysAhead`
+* Config option `liveReloadInterval`
+* Config option `showNames`
+* Config option `showLogos`
+* Support for game status `postponed`
 * Github actions (linting)
 
 ### Changed
