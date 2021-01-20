@@ -10,19 +10,20 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 
 ## Installation
 
-1. Clone this repo into `~/MagicMirror/modules` directory.
-1. Configure your `~/MagicMirror/config/config.js`:
+* Clone this repo into `~/MagicMirror/modules` directory.
+* Configure your `~/MagicMirror/config/config.js`:
 
-    ```
-    {
-        module: 'MMM-NHL',
-        position: 'top_right',
-        config: {
-            ...
-        }
+```js
+{
+    module: 'MMM-NHL',
+    position: 'top_right',
+    config: {
+        // Add your config options here, which have a different value than default.
     }
-    ```
-1. Run command `npm i --production` in `~/MagicMirror/modules/MMM-NHL` directory.
+}
+```
+
+* Run command `npm i --production` in `~/MagicMirror/modules/MMM-NHL` directory.
 
 ## Config Options
 

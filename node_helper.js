@@ -105,31 +105,30 @@ module.exports = NodeHelper.create({
         };
     },
 
+    parseTeam(teams = {}, type) {
+        return {
+            id: teams[type].team.id,
+            name: teams[type].team.name,
+            short: this.teamMapping[teams[type].team.id],
+            score: teams[type].score
+        };
+    },
+
     parseGame(game = {}) {
         return {
             id: game.gamePk,
             timestamp: game.gameDate,
             status: {
-                abstract: game.status?.abstractGameState,
-                detailed: game.status?.detailedState
+                abstract: game.status.abstractGameState,
+                detailed: game.status.detailedState
             },
             teams: {
-                away: {
-                    id: game.teams?.away?.team?.id,
-                    name: game.teams?.away?.team?.name,
-                    short: this.teamMapping[game.teams?.away?.team?.id],
-                    score: game.teams?.away?.score
-                },
-                home: {
-                    id: game.teams?.home?.team?.id,
-                    name: game.teams?.home?.team?.name,
-                    short: this.teamMapping[game.teams?.home?.team?.id],
-                    score: game.teams?.home?.score
-                }
+                away: this.parseTeam(game.teams, 'away'),
+                home: this.parseTeam(game.teams, 'home')
             },
             live: {
-                period: game.linescore?.currentPeriodOrdinal,
-                timeRemaining: game.linescore?.currentPeriodTimeRemaining
+                period: game.linescore.currentPeriodOrdinal,
+                timeRemaining: game.linescore.currentPeriodTimeRemaining
             }
         };
     },
