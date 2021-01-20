@@ -148,7 +148,7 @@ module.exports = NodeHelper.create({
 
     async updateSchedule() {
         const schedule = await this.fetchSchedule();
-        schedule.sort(sort);
+        schedule.sort(this.sort);
         const season = this.computeSeasonDetails(schedule);
 
         const focusSchedule = schedule.filter(this.filterGameByFocus.bind(this));
