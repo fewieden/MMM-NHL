@@ -41,7 +41,7 @@ module.exports = NodeHelper.create({
             return;
         }
 
-        const {teams} = await response.json();
+        const { teams } = await response.json();
 
         this.teamMapping = teams.reduce((mapping, team) => {
             mapping[team.id] = team.abbreviation;
@@ -59,7 +59,7 @@ module.exports = NodeHelper.create({
         date.setDate(date.getDate() + this.config.daysInPast + this.config.daysAhead);
         const endDate = date.toISOString().slice(0, 10);
 
-        const query = qs.stringify({startDate, endDate, expand: 'schedule.linescore'});
+        const query = qs.stringify({ startDate, endDate, expand: 'schedule.linescore' });
         const url = `${BASE_URL}/schedule?${query}`;
         const response = await fetch(url);
 
@@ -68,7 +68,7 @@ module.exports = NodeHelper.create({
             return;
         }
 
-        const {dates} = await response.json();
+        const { dates } = await response.json();
 
         return dates.map(date => date.games).flat();
     },
@@ -140,7 +140,7 @@ module.exports = NodeHelper.create({
     },
 
     sort(game1, game2) {
-        if(game1.gameDate == game2.gameDate) {
+        if (game1.gameDate === game2.gameDate) {
             return game1.id > game2.id ? 1 : -1;
         }
         return game1.gameDate > game2.gameDate ? 1 : -1;
@@ -156,7 +156,7 @@ module.exports = NodeHelper.create({
         const games = focusSchedule.map(this.parseGame.bind(this));
 
         this.setNextGame(games);
-        this.sendSocketNotification('SCHEDULE', {games, season});
+        this.sendSocketNotification('SCHEDULE', { games, season });
     },
 
     fetchOnLiveState() {
