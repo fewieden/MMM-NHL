@@ -9,6 +9,11 @@
 * Dependency `node-fetch`
 * Config option `daysInPast`
 * Config option `daysAhead`
+* Config option `liveReloadInterval`
+* Config option `showNames`
+* Config option `showLogos`
+* Support for game status `postponed`
+* Github actions (linting and changelog enforcer)
 
 ### Changed
 
@@ -20,6 +25,7 @@
 ### Removed
 
 * Config option `format`, instead rendering information based on locale.
+* Travis integration
 * Dependency `moment-timezone`
 * Dependency `request`
 * Local team logos
