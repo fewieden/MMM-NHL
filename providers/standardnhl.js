@@ -69,6 +69,11 @@ GameProvider.register("StandardNhl", {
         return new Season(year, mode);
     },
 
+    parseTeam(teams = {}, type) {
+        return new Team(teams[type].team.id, teams[type].team.name, this.teamMapping[teams[type].team.id], teams[type].score);
+    },
+
+
     parseGame(game = {}) {
         const result = new Game();
         if (!this.teamMapping)
@@ -78,16 +83,16 @@ GameProvider.register("StandardNhl", {
         result.gameType = game.gameType;
         result.gameDate = game.gameDate;
         result.status = {
-            abstract: game.status?.abstractGameState,
-            detailed: game.status?.detailedState
+            abstract: game.status.abstractGameState,
+            detailed: game.status.detailedState
         };
         result.teams = {
-            away: new Team(game.teams?.away?.team?.id, game.teams?.away?.team?.name, this.teamMapping[game.teams?.away?.team?.id], game.teams?.away?.score),
-            home: new Team(game.teams?.home?.team?.id, game.teams?.home?.team?.name, this.teamMapping[game.teams?.home?.team?.id], game.teams?.home?.score)
+            away: this.parseTeam(game.teams, 'away'),
+            home: this.parseTeam(game.teams, 'home')
         };
         result.live = {
-            period: game.linescore?.currentPeriodOrdinal,
-            timeRemaining: game.linescore?.currentPeriodTimeRemaining
+            period: game.linescore.currentPeriodOrdinal,
+            timeRemaining: game.linescore.currentPeriodTimeRemaining
         };
         return result;
     },

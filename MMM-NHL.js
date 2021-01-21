@@ -84,7 +84,6 @@ Module.register('MMM-NHL', {
             this.games = payload.games; 
             this.season = payload.season;
             this.setRotateInterval();
-            console.log(this.games);
         }
     },
 
@@ -107,30 +106,20 @@ Module.register('MMM-NHL', {
     },
 
     addFilters() {
-        this.nunjucksEnvironment().addFilter('calendar', game => {
-            if (game.status.detailed === 'Pre-Game') {
-                return this.translate('PRE_GAME');
-            } else if (game.status.detailed === 'Postponed') {
-                return this.translate('Postponed')
-            } else if (game.status.abstract === 'Preview') {
-                const now = new Date();
-                const inAWeek = now.setDate(now.getDate() + 7);
-                const start = new Date(game.gameDate);
+        this.nunjucksEnvironment().addFilter('formatStartDate', game => {
+            const now = new Date();
+            const inAWeek = now.setDate(now.getDate() + 7);
+            const start = new Date(game.gameDate);
 
-                if (start > inAWeek) {
-                    return new Intl.DateTimeFormat(config.locale, {
-                        month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-                    }).format(start);
-                }
-
+            if (start > inAWeek) {
                 return new Intl.DateTimeFormat(config.locale, {
-                    weekday: 'short', hour: '2-digit', minute: '2-digit'
+                    month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
                 }).format(start);
-            } else if (game.status.abstract === 'Live' && game.live.period) {
-                return `${game.live.period} ${game.live.timeRemaining}`;
             }
 
-            return this.translate(game.status.abstract);
+            return new Intl.DateTimeFormat(config.locale, {
+                weekday: 'short', hour: '2-digit', minute: '2-digit'
+            }).format(start);
         });
     }
 });
