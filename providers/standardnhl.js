@@ -15,7 +15,7 @@ const { Game, Team, Season } = require("./game.js");
 const fetch = require('node-fetch');
 const qs = require('querystring');
 
-GameProvider.register("StandardNhl", {
+const standardNhlProvider = {
     name: "StandardNhl",
     createTeamMapping() {
         this.teamMapping = this.teams.reduce((mapping, team) => {
@@ -96,4 +96,8 @@ GameProvider.register("StandardNhl", {
         };
         return result;
     },
-})
+};
+
+GameProvider.register("StandardNhl", standardNhlProvider)
+
+module.exports = standardNhlProvider;
