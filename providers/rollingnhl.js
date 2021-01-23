@@ -36,9 +36,11 @@ rollingProvider.fetch = async function () {
 
     const { dates } = await response.json();
     if (dates.length > 2) {
-        const anyStarted = dates[1].games.every(game => game.status.abstractGameState === 'Final' || game.status.abstractGameState === 'Live');
+        const anyStarted = dates[1].games.some(game => game.status.abstractGameState === 'Final' || game.status.abstractGameState === 'Live');
         if (anyStarted) {
             dates.splice(0, 1);
+        } else {
+            dates.splice(2,1);
         }
     }
 

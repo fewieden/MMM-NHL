@@ -112,12 +112,12 @@ Module.register('MMM-NHL', {
             const start = new Date(game.gameDate);
 
             if (start > inAWeek) {
-                return new Intl.DateTimeFormat(config.locale, {
+                return new Intl.DateTimeFormat(this.config.locale, {
                     month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
                 }).format(start);
             }
 
-            return new Intl.DateTimeFormat(config.locale, {
+            return new Intl.DateTimeFormat(this.config.locale, {
                 weekday: 'short', hour: '2-digit', minute: '2-digit'
             }).format(start);
         });
