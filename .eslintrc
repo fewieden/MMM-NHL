@@ -1,8 +1,5 @@
 {
-    "extends": ["esnext", "esnext/style-guide", "node", "node/style-guide", "plugin:jsdoc/recommended"],
-    "plugins": [
-        "jsdoc"
-    ],
+    "extends": ["esnext", "esnext/style-guide", "node", "node/style-guide"],
     "parserOptions": {
         "ecmaVersion": 2017,
         "sourceType": "module"
