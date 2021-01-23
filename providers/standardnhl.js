@@ -9,18 +9,21 @@
 
 const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
 const GameProvider = require('./gameprovider.js');
-const {Game, Team, Season} = require('./game.js');
+const {GameStatus, LiveGameInfo, Teams, Team, Season} = require('./providerModels.js');
+const {NhlGame} = require('./nhlgame.js');
 const fetch = require('node-fetch');
 const qs = require('querystring');
 
 const standardNhlProvider = {
     name: 'StandardNhl',
+
     createTeamMapping() {
         this.teamMapping = this.teams.reduce((mapping, team) => {
             mapping[team.id] = team.abbreviation;
             return mapping;
         }, {});
     },
+
     async fetch() {
         const date = new Date();
         date.setDate(date.getDate() - this.config.daysInPast);
@@ -72,26 +75,17 @@ const standardNhlProvider = {
 
 
     parseGame(game = {}) {
-        const result = new Game();
+        const result = new NhlGame();
         if (!this.teamMapping) {
             this.createTeamMapping();
         }
         result.id = game.gamePk;
         result.season = game.season;
         result.gameType = game.gameType;
-        result.gameDate = game.gameDate;
-        result.status = {
-            abstract: game.status.abstractGameState,
-            detailed: game.status.detailedState
-        };
-        result.teams = {
-            away: this.parseTeam(game.teams, 'away'),
-            home: this.parseTeam(game.teams, 'home')
-        };
-        result.live = {
-            period: game.linescore.currentPeriodOrdinal,
-            timeRemaining: game.linescore.currentPeriodTimeRemaining
-        };
+        result.gameDate = new Date(game.gameDate);
+        result.status = new GameStatus(game.status.abstractGameState, game.status.detailedState);
+        result.teams = new Teams(this.parseTeam(game.teams, 'home'), this.parseTeam(game.teams, 'away'));
+        result.live = new LiveGameInfo(game.linescore.currentPeriodOrdinal, game.linescore.currentPeriodTimeRemaining)
         return result;
     },
 };

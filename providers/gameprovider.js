@@ -15,20 +15,19 @@ const GameProvider = Class.extend({
     teams: [],
     name: null,
 
-    init: (config, teams) => {        
+    init (config, teams) {
         this.config = config;
         this.teams = teams;
-        Log.info(`GameProvider: ${name} initialized.`);
+        Log.info(`GameProvider: ${this.name} initialized with Teams: ${JSON.stringify(teams)}`);
     },
 
-    fetch: () => {
-        Log.warn(`GameProvider: ${name} does not subclass fetch method.`);
+    fetch() {
+        Log.warn(`GameProvider: ${this.name} does not subclass fetch method.`);
     },
-
 
     // eslint-disable-next-line
-    fetchSeason: (games) => {
-        Log.warn(`GameProvider: ${name} does not subclass getSeason method.`);
+    fetchSeason (games) {
+        Log.warn(`GameProvider: ${this.name} does not subclass getSeason method.`);
     },
 
 });

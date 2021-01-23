@@ -17,6 +17,7 @@ const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
 
 const rollingProvider = standardNhlProvider;
 rollingProvider.name = 'RollingNhl';
+
 rollingProvider.fetch = async function () {
     const dateFormat = 'YYYY-MM-DD';
     const date = moment().tz('America/Toronto')

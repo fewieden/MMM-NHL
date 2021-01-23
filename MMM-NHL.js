@@ -74,7 +74,7 @@ Module.register('MMM-NHL', {
     start() {
         Log.info(`Starting module: ${this.name}`);
         this.addFilters();
-        this.sendSocketNotification('CONFIG', { config: this.config });
+        this.sendSocketNotification('CONFIG', {config: this.config});
     },
 
     socketNotificationReceived(notification, payload) {

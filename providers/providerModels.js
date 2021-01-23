@@ -23,11 +23,31 @@ class Team {
     }
 }
 
+class GameStatus {
+    constructor(abstract, detailed) {
+        this.abstract = abstract;
+        this.detailed = detailed;
+    }
+}
+
+class LiveGameInfo {
+    constructor(period, timeRemaining) {
+        this.period = period;
+        this.timeRemaining = timeRemaining;
+    }
+}
+
+class Teams {
+    constructor(home, away) {
+        this.home = home;
+        this.away = away;
+    }
+}
+
 class Game {
     constructor() {
         this.id = null;
         this.gameDate = null;
-        this.season = null;
         this.gameType = null;
         this.status = null;
         this.teams = [];
@@ -35,4 +55,4 @@ class Game {
     }
 }
 
-module.exports = {Season, Team, Game};
+module.exports = {Season, Team, Game, Teams, GameStatus, LiveGameInfo};
