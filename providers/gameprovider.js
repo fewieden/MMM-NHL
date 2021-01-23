@@ -7,39 +7,44 @@
  */
 
 /* eslint-env node */
-const Log = require("../../../js/logger");
-var GameProvider = Class.extend({
-	config: null,
-	teams: [],
-	
-	init: function (config, teams) {
-		this.config = config;
-		this.teams = teams;
-		Log.info(`GameProvider: ${this.name} initialized.`);
-	},
 
-	fetch: function () {
-		Log.warn(`GameProvider: ${this.name} does not subclass fetch method.`);
-	},
+const Log = require('../../../js/logger');
 
-	fetchSeason: function (games) {
-		Log.warn(`GameProvider: ${this.name} does not subclass getSeason method.`);
-	},
+const GameProvider = Class.extend({
+    config: null,
+    teams: [],
+    name: null,
+
+    init: (config, teams) => {        
+        this.config = config;
+        this.teams = teams;
+        Log.info(`GameProvider: ${name} initialized.`);
+    },
+
+    fetch: () => {
+        Log.warn(`GameProvider: ${name} does not subclass fetch method.`);
+    },
+
+
+    // eslint-disable-next-line
+    fetchSeason: (games) => {
+        Log.warn(`GameProvider: ${name} does not subclass getSeason method.`);
+    },
 
 });
 
 GameProvider.providers = [];
 
-GameProvider.register = function (identifier, provider) {
-	Log.info(`MMM-NHL: Registering ${identifier}`);
-	GameProvider.providers[identifier.toLowerCase()] = GameProvider.extend(provider);
+GameProvider.register = (identifier, provider) => {
+    Log.info(`MMM-NHL: Registering ${identifier}`);
+    GameProvider.providers[identifier.toLowerCase()] = GameProvider.extend(provider);
 };
 
-GameProvider.initialize = function (identifier, config, teams) {
-	Log.info(`MMM-NHL: Initializing ${identifier}`);
-	var provider = new GameProvider.providers[identifier.toLowerCase()];
-	provider.init(config, teams);
-	return provider;
+GameProvider.initialize = (identifier, config, teams) => {
+    Log.info(`MMM-NHL: Initializing ${identifier}`);
+    const provider = new GameProvider.providers[identifier.toLowerCase()];
+    provider.init(config, teams);
+    return provider;
 }
 
 module.exports = GameProvider;

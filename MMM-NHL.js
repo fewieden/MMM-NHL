@@ -4,7 +4,6 @@
  * By fewieden https://github.com/fewieden/MMM-NHL
  * MIT Licensed.
  */
-/* global config, GameProvider */
 
 Module.register('MMM-NHL', {
     modes: {
@@ -41,7 +40,7 @@ Module.register('MMM-NHL', {
         daysAhead: 7,
         showNames: true,
         showLogos: true,
-        provider: "StandardNhl"
+        provider: 'StandardNhl'
     },
 
     getTranslations() {
@@ -75,13 +74,13 @@ Module.register('MMM-NHL', {
     start() {
         Log.info(`Starting module: ${this.name}`);
         this.addFilters();
-        this.sendSocketNotification('CONFIG', {config: this.config});
+        this.sendSocketNotification('CONFIG', { config: this.config });
     },
 
     socketNotificationReceived(notification, payload) {
         if (notification === 'SCHEDULE') {
             this.loading = false;
-            this.games = payload.games; 
+            this.games = payload.games;
             this.season = payload.season;
             this.setRotateInterval();
         }

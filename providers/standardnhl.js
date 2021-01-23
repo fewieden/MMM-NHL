@@ -1,4 +1,3 @@
-/* global GameProvider, Game */
 /* Magic Mirror
  * Module: MMM-NHL
  *
@@ -8,19 +7,17 @@
 
 /* eslint-env node */
 
-
 const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
-const GameProvider = require("./gameprovider.js");
-const { Game, Team, Season } = require("./game.js");
+const GameProvider = require('./gameprovider.js');
+const {Game, Team, Season} = require('./game.js');
 const fetch = require('node-fetch');
 const qs = require('querystring');
 
 const standardNhlProvider = {
-    name: "StandardNhl",
+    name: 'StandardNhl',
     createTeamMapping() {
         this.teamMapping = this.teams.reduce((mapping, team) => {
             mapping[team.id] = team.abbreviation;
-
             return mapping;
         }, {});
     },
@@ -31,7 +28,7 @@ const standardNhlProvider = {
         date.setDate(date.getDate() + this.config.daysInPast + this.config.daysAhead);
         const endDate = date.toISOString().slice(0, 10);
 
-        const query = qs.stringify({ startDate, endDate, expand: 'schedule.linescore' });
+        const query = qs.stringify({startDate, endDate, expand: 'schedule.linescore'});
         const url = `${BASE_URL}/schedule?${query}`;
         const response = await fetch(url);
 
@@ -40,14 +37,14 @@ const standardNhlProvider = {
             return;
         }
 
-        const { dates } = await response.json();
+        const {dates} = await response.json();
 
         return dates.map(date => date.games.map(this.parseGame.bind(this))).flat();
     },
 
     async fetchSeason(games) {
-        //TODO: this should be the most recent 'Final'
-        const game = games.find(game => game.status.abstractGameState !== 'Final') || (schedule.length > 0 && schedule[schedule.length - 1]);
+        // TODO: this should be the most recent 'Final'
+        const game = games.find(game => game.status.abstractGameState !== 'Final') || games.length > 0 && games[games.length - 1];
 
         if (game) {
             return new Season(`${game.season.slice(2, 4)}/${game.season.slice(6, 8)}`, game.gameType);
@@ -62,10 +59,10 @@ const standardNhlProvider = {
 
         const year = `${season.seasonId.slice(0, 4)}/${season.seasonId.slice(4)}`;
         const mode = date >= start && date <= end
-            ? "R"
+            ? 'R'
             : date >= end
-                ? "P"
-                : "PR";
+                ? 'P'
+                : 'PR';
         return new Season(year, mode);
     },
 
@@ -76,8 +73,9 @@ const standardNhlProvider = {
 
     parseGame(game = {}) {
         const result = new Game();
-        if (!this.teamMapping)
+        if (!this.teamMapping) {
             this.createTeamMapping();
+        }
         result.id = game.gamePk;
         result.season = game.season;
         result.gameType = game.gameType;
@@ -98,6 +96,6 @@ const standardNhlProvider = {
     },
 };
 
-GameProvider.register("StandardNhl", standardNhlProvider)
+GameProvider.register('StandardNhl', standardNhlProvider)
 
 module.exports = standardNhlProvider;

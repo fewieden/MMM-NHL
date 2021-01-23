@@ -1,5 +1,3 @@
-/* global GameProvider, Game */
-
 /* Magic Mirror
  * Module: MMM-NHL
  *
@@ -11,8 +9,7 @@
 
 const NodeHelper = require('node_helper');
 const fetch = require('node-fetch');
-const GameProvider = require("./providers/gameprovider.js");
-const Log = require("../../js/logger");
+const GameProvider = require('./providers/gameprovider.js');
 
 const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
 

@@ -1,4 +1,3 @@
-/* global GameProvider, Game */
 /* Magic Mirror
  * Module: MMM-NHL
  *
@@ -9,22 +8,24 @@
 /* eslint-env node */
 
 const moment = require('moment-timezone');
-const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
-const GameProvider = require("./gameprovider.js");
-const standardNhlProvider = require("./standardnhl.js");
+const GameProvider = require('./gameprovider.js');
+const standardNhlProvider = require('./standardnhl.js');
 const fetch = require('node-fetch');
 const qs = require('querystring');
+
+const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
 
 const rollingProvider = standardNhlProvider;
 rollingProvider.name = 'RollingNhl';
 rollingProvider.fetch = async function () {
-    const dateFormat = "YYYY-MM-DD";
-    const date = moment().tz("America/Toronto").add(-1, "d"); // Yesterday
-    const startDate = date.format("YYYY-MM-DD");
-    date.add(2, "d"); // Tomorrow
+    const dateFormat = 'YYYY-MM-DD';
+    const date = moment().tz('America/Toronto')
+        .add(-1, 'd'); // Yesterday
+    const startDate = date.format(dateFormat);
+    date.add(2, 'd'); // Tomorrow
     const endDate = date.format(dateFormat);
 
-    const query = qs.stringify({ startDate, endDate, expand: 'schedule.linescore' });
+    const query = qs.stringify({startDate, endDate, expand: 'schedule.linescore'});
 
     const url = `${BASE_URL}/schedule?${query}`;
     const response = await fetch(url);
@@ -34,13 +35,13 @@ rollingProvider.fetch = async function () {
         return;
     }
 
-    const { dates } = await response.json();
+    const {dates} = await response.json();
     if (dates.length > 2) {
         const anyStarted = dates[1].games.some(game => game.status.abstractGameState === 'Final' || game.status.abstractGameState === 'Live');
         if (anyStarted) {
             dates.splice(0, 1);
         } else {
-            dates.splice(2,1);
+            dates.splice(2, 1);
         }
     }
 
