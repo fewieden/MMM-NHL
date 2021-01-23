@@ -1,18 +1,44 @@
-/* Magic Mirror
- * Module: MMM-NHL
+/**
+ * @file MMM-NHL.js
  *
- * By fewieden https://github.com/fewieden/MMM-NHL
- * MIT Licensed.
+ * @author fewieden
+ * @license MIT
+ *
+ * @see  https://github.com/fewieden/MMM-NHL
  */
+
 /* global config */
 
+/**
+ * @external Module
+ * @see https://github.com/MichMich/MagicMirror/blob/master/js/module.js
+ */
+
+/**
+ * @external Log
+ * @see https://github.com/MichMich/MagicMirror/blob/master/js/logger.js
+ */
+
+/**
+ * @module MMM-NHL
+ * @description Frontend of the MagicMirror² module.
+ *
+ * @requires external:Module
+ * @requires external:Log
+ */
 Module.register('MMM-NHL', {
+    /**
+     * @member {Object.<string, string>} modes - Maps mode short codes to names.
+     */
     modes: {
         PR: 'Pre-season',
         R: 'Regular season',
         P: 'Playoffs',
     },
 
+    /**
+     * @member {Object.<string, string>} states - Maps game state short codes to translation keys.
+     */
     states: {
         '1st': '1ST_PERIOD',
         '2nd': '2ND_PERIOD',
@@ -24,12 +50,40 @@ Module.register('MMM-NHL', {
         'FINAL SO': 'FINAL_SHOOTOUT'
     },
 
+    /**
+     * @member {boolean} loading - Indicates loading state of module and data.
+     */
     loading: true,
+    /**
+     * @member {Game[]} games - List of all games matching focus and timespan config options.
+     */
     games: [],
+    /**
+     * @member {SeasonDetails} season - Current season details e.g. year and mode.
+     */
     season: {},
+    /**
+     * @member {number} rotateIndex - Current index of rotation carousel.
+     */
     rotateIndex: 0,
+    /**
+     * @member {?Interval} rotateInterval - Interval to update rotation index.
+     */
     rotateInterval: null,
 
+    /**
+     * @member {Object} defaults - Defines the default config values.
+     * @property {boolean} colored - Flag to show logos in color or black/white.
+     * @property {boolean|string[]} focus_on - List of team name short codes to display games from.
+     * @property {number} matches - Max amount of matches to display at once.
+     * @property {number} rotateInterval - Amount of milliseconds a page of the carousel is displayed.
+     * @property {number} reloadInterval - Amount of milliseconds between data fetching.
+     * @property {number} liveReloadInterval - Amount of milliseconds between data fetching during a live game.
+     * @property {number} daysInPast - Amount of days a match should be displayed after it is finished.
+     * @property {number} daysAhead - Amount of days a match should be displayed before it starts.
+     * @property {boolean} showNames - Flag to show team names.
+     * @property {boolean} showLogos - Flag to show club logos.
+     */
     defaults: {
         colored: false,
         focus_on: false,
@@ -43,6 +97,13 @@ Module.register('MMM-NHL', {
         showLogos: true
     },
 
+    /**
+     * @function getTranslations
+     * @description Translations for this module.
+     * @override
+     *
+     * @returns {Object.<string, string>} Available translations for this module (key: language code, value: filepath).
+     */
     getTranslations() {
         return {
             en: 'translations/en.json',
@@ -51,14 +112,35 @@ Module.register('MMM-NHL', {
         };
     },
 
+    /**
+     * @function getStyles
+     * @description Style dependencies for this module.
+     * @override
+     *
+     * @returns {string[]} List of the style dependency filepaths.
+     */
     getStyles() {
         return ['font-awesome.css', 'MMM-NHL.css'];
     },
 
+    /**
+     * @function getTemplate
+     * @description Nunjuck template.
+     * @override
+     *
+     * @returns {string} Path to nunjuck template.
+     */
     getTemplate() {
         return 'templates/MMM-NHL.njk';
     },
 
+    /**
+     * @function getTemplateData
+     * @description Data that gets rendered in the nunjuck template.
+     * @override
+     *
+     * @returns {Object} Data for the nunjuck template.
+     */
     getTemplateData() {
         return {
             loading: this.loading,
@@ -71,22 +153,42 @@ Module.register('MMM-NHL', {
         };
     },
 
+    /**
+     * @function start
+     * @description Adds nunjuck filters and sends config to node_helper.
+     * @override
+     *
+     * @returns {void}
+     */
     start() {
         Log.info(`Starting module: ${this.name}`);
         this.addFilters();
         this.sendSocketNotification('CONFIG', {config: this.config});
     },
 
+    /**
+     * @function socketNotificationReceived
+     * @description Handles incoming messages from node_helper.
+     * @override
+     *
+     * @param {string} notification - Notification name
+     * @param {*} payload - Detailed payload of the notification.
+     */
     socketNotificationReceived(notification, payload) {
         if (notification === 'SCHEDULE') {
             this.loading = false;
             this.games = payload.games;
             this.season = payload.season;
             this.setRotateInterval();
-            console.log(this.games);
         }
     },
 
+    /**
+     * @function setRotateInterval
+     * @description Sets interval if necessary which updates the rotateIndex.
+     *
+     * @returns {void}
+     */
     setRotateInterval() {
         if (!this.rotateInterval && this.games.length > this.config.matches) {
             this.rotateInterval = setInterval(() => {
@@ -105,6 +207,12 @@ Module.register('MMM-NHL', {
         this.updateDom(300);
     },
 
+    /**
+     * @function addFilters
+     * @description Adds the filter used by the nunjuck template.
+     *
+     * @returns {void}
+     */
     addFilters() {
         this.nunjucksEnvironment().addFilter('formatStartDate', game => {
             const now = new Date();

@@ -14,6 +14,7 @@
 * Config option `showLogos`
 * Support for game status `postponed`
 * Github actions (linting and changelog enforcer)
+* JSDoc documentation
 
 ### Changed
 
