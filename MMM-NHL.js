@@ -28,7 +28,7 @@
  */
 Module.register('MMM-NHL', {
     /**
-     * @member {Object.<string, string>} modes - Maps mode short codes to names.
+     * @member {object.<string, string>} modes - Maps mode short codes to names.
      */
     modes: {
         PR: 'Pre-season',
@@ -37,7 +37,7 @@ Module.register('MMM-NHL', {
     },
 
     /**
-     * @member {Object.<string, string>} states - Maps game state short codes to translation keys.
+     * @member {object.<string, string>} states - Maps game state short codes to translation keys.
      */
     states: {
         '1st': '1ST_PERIOD',
@@ -72,7 +72,7 @@ Module.register('MMM-NHL', {
     rotateInterval: null,
 
     /**
-     * @member {Object} defaults - Defines the default config values.
+     * @member {object} defaults - Defines the default config values.
      * @property {boolean} colored - Flag to show logos in color or black/white.
      * @property {boolean|string[]} focus_on - List of team name short codes to display games from.
      * @property {number} matches - Max amount of matches to display at once.
@@ -102,7 +102,7 @@ Module.register('MMM-NHL', {
      * @description Translations for this module.
      * @override
      *
-     * @returns {Object.<string, string>} Available translations for this module (key: language code, value: filepath).
+     * @returns {object.<string, string>} Available translations for this module (key: language code, value: filepath).
      */
     getTranslations() {
         return {
@@ -139,7 +139,7 @@ Module.register('MMM-NHL', {
      * @description Data that gets rendered in the nunjuck template.
      * @override
      *
-     * @returns {Object} Data for the nunjuck template.
+     * @returns {object} Data for the nunjuck template.
      */
     getTemplateData() {
         return {

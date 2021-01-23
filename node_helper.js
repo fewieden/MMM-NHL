@@ -158,6 +158,8 @@ module.exports = NodeHelper.create({
      * @function filterGameByFocus
      * @description Helper function to filter games based on config option.
      *
+     * @param {object} game - Raw game information.
+     *
      * @returns {boolean} Should game remain in list?
      */
     filterGameByFocus(game) {
