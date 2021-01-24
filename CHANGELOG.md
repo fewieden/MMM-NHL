@@ -15,6 +15,9 @@
 * Support for game status `postponed` thanks to [dannoh](https://github.com/dannoh).
 * Github actions (linting and changelog enforcer)
 * JSDoc documentation
+* Ability to add additional Game data providers
+  * standardNhl - Uses config values `daysInPast` and `daysAhead`
+  * rollingNhl - Only shows 2 days. Previous & Next, or Current & Next
 
 ### Changed
 
