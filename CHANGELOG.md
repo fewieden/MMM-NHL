@@ -9,11 +9,12 @@
 * Dependency `node-fetch`
 * Config option `daysInPast`
 * Config option `daysAhead`
-* Config option `liveReloadInterval`
-* Config option `showNames`
-* Config option `showLogos`
-* Support for game status `postponed`
+* Config option `liveReloadInterval` thanks to [dannoh](https://github.com/dannoh).
+* Config option `showNames` thanks to [dannoh](https://github.com/dannoh).
+* Config option `showLogos` thanks to [dannoh](https://github.com/dannoh).
+* Support for game status `postponed` thanks to [dannoh](https://github.com/dannoh).
 * Github actions (linting and changelog enforcer)
+* JSDoc documentation
 
 ### Changed
 

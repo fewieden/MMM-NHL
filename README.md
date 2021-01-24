@@ -39,3 +39,8 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 | `liveReloadInterval` | `60000 (1 min)` | How often should the data be fetched during a live game. |
 | `showNames` | `true` | Should team names be displayed? |
 | `showLogos` | `true` | Should team logos be displayed? |
+
+## Developer
+
+* `npm run lint` - Lints JS and CSS files.
+* `npm run docs` - Generates documentation.
