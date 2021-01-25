@@ -2,6 +2,10 @@
 
 National Hockey League Module for MagicMirror<sup>2</sup>
 
+## Examples
+
+![](.github/example_nhl.png) ![](.github/example_nhl_2.png) ![](.github/example_nhl_3.png)
+
 ## Dependencies
 
 * An installation of [MagicMirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
@@ -39,6 +43,16 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 | `liveReloadInterval` | `60000 (1 min)` | How often should the data be fetched during a live game. |
 | `showNames` | `true` | Should team names be displayed? |
 | `showLogos` | `true` | Should team logos be displayed? |
+
+## Global config
+
+| **Option** | **Default** | **Description** |
+| --- | --- | --- |
+| `locale` | `undefined` | By default it is using your system settings. You can specify the locale in the global MagicMirror config. Possible values are for e.g.: `'en-US'` or `'de-DE'`. |
+
+To set a global config you have top set the value in your config.js file inside the MagicMirror project.
+
+![](.github/global.png)
 
 ## Developer
 
