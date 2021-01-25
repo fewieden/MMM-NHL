@@ -83,6 +83,7 @@ Module.register('MMM-NHL', {
      * @property {number} daysAhead - Amount of days a match should be displayed before it starts.
      * @property {boolean} showNames - Flag to show team names.
      * @property {boolean} showLogos - Flag to show club logos.
+     * @property {boolean} rollOverGames - Flag to show today's games and previous/next day based on game status.
      */
     defaults: {
         colored: false,
@@ -94,7 +95,8 @@ Module.register('MMM-NHL', {
         daysInPast: 1,
         daysAhead: 7,
         showNames: true,
-        showLogos: true
+        showLogos: true,
+        rollOver: false
     },
 
     /**
@@ -155,7 +157,7 @@ Module.register('MMM-NHL', {
 
     /**
      * @function start
-     * @description Adds nunjuck filters and sends config to node_helper.
+     * @description Adds nunjuck filters, overrides day config options if rollOver and sends config to node_helper.
      * @override
      *
      * @returns {void}
@@ -163,6 +165,12 @@ Module.register('MMM-NHL', {
     start() {
         Log.info(`Starting module: ${this.name}`);
         this.addFilters();
+
+        if (this.config.rollOver) {
+            this.config.daysInPast = 1;
+            this.config.daysAhead = 1;
+        }
+
         this.sendSocketNotification('CONFIG', {config: this.config});
     },
 

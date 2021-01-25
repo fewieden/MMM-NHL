@@ -43,6 +43,7 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 | `liveReloadInterval` | `60000 (1 min)` | How often should the data be fetched during a live game. |
 | `showNames` | `true` | Should team names be displayed? |
 | `showLogos` | `true` | Should team logos be displayed? |
+| `rollOver` | `false` | Displays today's games and based on game status also yesterdays games or tomorrows games. Automatically overrides `daysInPast` and `daysAhead` to 1. |
 
 ## Global config
 

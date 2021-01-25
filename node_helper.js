@@ -45,6 +45,7 @@ const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
  * @typedef {object} Game
  * @property {number} id - Game identifier.
  * @property {string} timestamp - Start date of the game in UTC timezone.
+ * @property {string} gameDay - Game day in format YYYY-MM-DD in north american timezone.
  * @property {object} status - Contains information about the game status.
  * @property {string} status.abstract - Abstract game status e.g. Preview, Live or Final.
  * @property {string} status.detailed - More detailed version of the abstract game status.
@@ -151,7 +152,7 @@ module.exports = NodeHelper.create({
 
         const {dates} = await response.json();
 
-        return dates.map(date => date.games).flat();
+        return dates.map(({date, games}) => games.map(game => ({...game, gameDay: date}))).flat();
     },
 
     /**
@@ -172,6 +173,35 @@ module.exports = NodeHelper.create({
         const awayTeam = this.teamMapping[game.teams.away.team.id];
 
         return focus.includes(homeTeam) || focus.includes(awayTeam);
+    },
+
+    /**
+     * @function filterRollOverGames
+     * @description Helper function to filter games based on rollOver config option.
+     *
+     * @param {Game[]} games - List of all games.
+     *
+     * @returns {Game[]} List of filtered games.
+     */
+    filterRollOverGames(games) {
+        if (!this.config.rollOver) {
+            return games;
+        }
+
+        const date = new Intl.DateTimeFormat('fr-ca', {timeZone: 'America/Toronto'})
+            .format(new Date());
+
+        const yesterday = games.filter(game => game.gameDay < date);
+        const today = games.filter(game => game.gameDay === date);
+        const tomorrow = games.filter(game => game.gameDay > date);
+
+        const ongoingStates = ['Final', 'Live'];
+
+        if (today.some(game => ongoingStates.includes(game.status.abstract))) {
+            return [...today, ...tomorrow];
+        }
+
+        return [...yesterday, ...today];
     },
 
     /**
@@ -232,6 +262,7 @@ module.exports = NodeHelper.create({
         return {
             id: game.gamePk,
             timestamp: game.gameDate,
+            gameDay: game.gameDay,
             status: {
                 abstract: game.status.abstractGameState,
                 detailed: game.status.detailedState
@@ -293,8 +324,10 @@ module.exports = NodeHelper.create({
 
         const games = focusSchedule.map(this.parseGame.bind(this));
 
-        this.setNextandLiveGames(games);
-        this.sendSocketNotification('SCHEDULE', {games, season});
+        const rollOverGames = this.filterRollOverGames(games);
+
+        this.setNextandLiveGames(rollOverGames);
+        this.sendSocketNotification('SCHEDULE', {games: rollOverGames, season});
     },
 
     /**
