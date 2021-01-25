@@ -1,9 +1,10 @@
 {
   "name": "mmm-nhl",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "National Hockey League Module for MagicMirror2",
   "scripts": {
-    "lint": "./node_modules/.bin/eslint . && ./node_modules/.bin/stylelint ."
+    "docs": "jsdoc -c jsdoc.json .",
+    "lint": "eslint . && stylelint **/*.css"
   },
   "repository": {
     "type": "git",
@@ -11,7 +12,8 @@
   },
   "keywords": [
     "MagicMirror",
-    "NHL"
+    "NHL",
+    "ice hockey"
   ],
   "author": "fewieden",
   "license": "MIT",
@@ -20,14 +22,13 @@
   },
   "homepage": "https://github.com/fewieden/MMM-NHL#readme",
   "devDependencies": {
-    "eslint": "^3.14.1",
-    "eslint-config-airbnb-base": "^11.0.1",
-    "eslint-plugin-import": "^2.2.0",
-    "stylelint": "^7.8.0",
-    "stylelint-config-standard": "^16.0.0"
+    "eslint": "^6.8.0",
+    "eslint-config-recommended": "^4.1.0",
+    "jsdoc": "^3.6.6",
+    "stylelint": "^13.8.0",
+    "stylelint-config-standard": "^20.0.0"
   },
   "dependencies": {
-    "request": "^2.74.0",
-    "moment-timezone": "^0.5.5"
+    "node-fetch": "^2.6.1"
   }
 }

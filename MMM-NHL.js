@@ -1,25 +1,44 @@
-/* Magic Mirror
- * Module: MMM-NHL
+/**
+ * @file MMM-NHL.js
  *
- * By fewieden https://github.com/fewieden/MMM-NHL
- * MIT Licensed.
+ * @author fewieden
+ * @license MIT
+ *
+ * @see  https://github.com/fewieden/MMM-NHL
  */
 
-/* global Module Log moment config */
+/* global config */
 
+/**
+ * @external Module
+ * @see https://github.com/MichMich/MagicMirror/blob/master/js/module.js
+ */
+
+/**
+ * @external Log
+ * @see https://github.com/MichMich/MagicMirror/blob/master/js/logger.js
+ */
+
+/**
+ * @module MMM-NHL
+ * @description Frontend of the MagicMirror² module.
+ *
+ * @requires external:Module
+ * @requires external:Log
+ */
 Module.register('MMM-NHL', {
-
+    /**
+     * @member {object.<string, string>} modes - Maps mode short codes to names.
+     */
     modes: {
-        '01': 'Pre-Season',
-        '02': 'Regular-Season',
-        '03': 'Playoffs'
+        PR: 'Pre-season',
+        R: 'Regular season',
+        P: 'Playoffs',
     },
 
-    details: {
-        y: (new Date()).getFullYear(),
-        t: '01'
-    },
-
+    /**
+     * @member {object.<string, string>} states - Maps game state short codes to translation keys.
+     */
     states: {
         '1st': '1ST_PERIOD',
         '2nd': '2ND_PERIOD',
@@ -31,233 +50,184 @@ Module.register('MMM-NHL', {
         'FINAL SO': 'FINAL_SHOOTOUT'
     },
 
-    teams: {
-        avalanche: 'COL',
-        blackhawks: 'CHI',
-        bluejackets: 'CBJ',
-        blues: 'STL',
-        bruins: 'BOS',
-        canadiens: 'MTL',
-        canucks: 'VAN',
-        capitals: 'WSH',
-        coyotes: 'ARI',
-        devils: 'NJD',
-        ducks: 'ANA',
-        flames: 'CGY',
-        flyers: 'PHI',
-        goldenknights: 'VGK',
-        hurricanes: 'CAR',
-        islanders: 'NYI',
-        jets: 'WPG',
-        kings: 'LAK',
-        lightning: 'TBL',
-        mapleleafs: 'TOR',
-        oilers: 'EDM',
-        panthers: 'FLA',
-        penguins: 'PIT',
-        predators: 'NSH',
-        rangers: 'NYR',
-        redwings: 'DET',
-        sabres: 'BUF',
-        senators: 'OTT',
-        sharks: 'SJS',
-        stars: 'DAL',
-        wild: 'MIN'
-    },
-
+    /**
+     * @member {boolean} loading - Indicates loading state of module and data.
+     */
+    loading: true,
+    /**
+     * @member {Game[]} games - List of all games matching focus and timespan config options.
+     */
+    games: [],
+    /**
+     * @member {SeasonDetails} season - Current season details e.g. year and mode.
+     */
+    season: {},
+    /**
+     * @member {number} rotateIndex - Current index of rotation carousel.
+     */
     rotateIndex: 0,
+    /**
+     * @member {?Interval} rotateInterval - Interval to update rotation index.
+     */
     rotateInterval: null,
 
+    /**
+     * @member {object} defaults - Defines the default config values.
+     * @property {boolean} colored - Flag to show logos in color or black/white.
+     * @property {boolean|string[]} focus_on - List of team name short codes to display games from.
+     * @property {number} matches - Max amount of matches to display at once.
+     * @property {number} rotateInterval - Amount of milliseconds a page of the carousel is displayed.
+     * @property {number} reloadInterval - Amount of milliseconds between data fetching.
+     * @property {number} liveReloadInterval - Amount of milliseconds between data fetching during a live game.
+     * @property {number} daysInPast - Amount of days a match should be displayed after it is finished.
+     * @property {number} daysAhead - Amount of days a match should be displayed before it starts.
+     * @property {boolean} showNames - Flag to show team names.
+     * @property {boolean} showLogos - Flag to show club logos.
+     */
     defaults: {
         colored: false,
         focus_on: false,
         matches: 6,
-        format: 'ddd h:mm',
-        rotateInterval: 20 * 1000, // every 20 seconds
-        reloadInterval: 30 * 60 * 1000 // every 30 minutes
+        rotateInterval: 20 * 1000,
+        reloadInterval: 30 * 60 * 1000,
+        liveReloadInterval: 60 * 1000,
+        daysInPast: 1,
+        daysAhead: 7,
+        showNames: true,
+        showLogos: true
     },
 
+    /**
+     * @function getTranslations
+     * @description Translations for this module.
+     * @override
+     *
+     * @returns {object.<string, string>} Available translations for this module (key: language code, value: filepath).
+     */
     getTranslations() {
         return {
             en: 'translations/en.json',
-            de: 'translations/de.json'
+            de: 'translations/de.json',
+            fr: 'translations/fr.json'
         };
     },
 
-    getScripts() {
-        return ['moment.js'];
-    },
-
+    /**
+     * @function getStyles
+     * @description Style dependencies for this module.
+     * @override
+     *
+     * @returns {string[]} List of the style dependency filepaths.
+     */
     getStyles() {
         return ['font-awesome.css', 'MMM-NHL.css'];
     },
 
-    start() {
-        Log.info(`Starting module: ${this.name}`);
-        this.sendSocketNotification('CONFIG', { config: this.config, teams: this.teams });
-        moment.locale(config.language);
+    /**
+     * @function getTemplate
+     * @description Nunjuck template.
+     * @override
+     *
+     * @returns {string} Path to nunjuck template.
+     */
+    getTemplate() {
+        return 'templates/MMM-NHL.njk';
     },
 
+    /**
+     * @function getTemplateData
+     * @description Data that gets rendered in the nunjuck template.
+     * @override
+     *
+     * @returns {object} Data for the nunjuck template.
+     */
+    getTemplateData() {
+        return {
+            loading: this.loading,
+            modes: this.modes,
+            season: this.season,
+            games: this.games,
+            rotateIndex: this.rotateIndex,
+            maxGames: Math.min(this.games.length, this.rotateIndex + this.config.matches),
+            config: this.config
+        };
+    },
+
+    /**
+     * @function start
+     * @description Adds nunjuck filters and sends config to node_helper.
+     * @override
+     *
+     * @returns {void}
+     */
+    start() {
+        Log.info(`Starting module: ${this.name}`);
+        this.addFilters();
+        this.sendSocketNotification('CONFIG', {config: this.config});
+    },
+
+    /**
+     * @function socketNotificationReceived
+     * @description Handles incoming messages from node_helper.
+     * @override
+     *
+     * @param {string} notification - Notification name
+     * @param {*} payload - Detailed payload of the notification.
+     */
     socketNotificationReceived(notification, payload) {
-        if (notification === 'SCORES') {
-            this.scores = payload.scores;
-            this.details = payload.details;
+        if (notification === 'SCHEDULE') {
+            this.loading = false;
+            this.games = payload.games;
+            this.season = payload.season;
             this.setRotateInterval();
         }
     },
 
+    /**
+     * @function setRotateInterval
+     * @description Sets interval if necessary which updates the rotateIndex.
+     *
+     * @returns {void}
+     */
     setRotateInterval() {
-        if (!this.rotateInterval && this.scores.length > this.config.matches) {
+        if (!this.rotateInterval && this.games.length > this.config.matches) {
             this.rotateInterval = setInterval(() => {
-                if (this.rotateIndex + this.config.matches >= this.scores.length) {
+                if (this.rotateIndex + this.config.matches >= this.games.length) {
                     this.rotateIndex = 0;
                 } else {
-                    this.rotateIndex = this.rotateIndex + this.config.matches;
+                    this.rotateIndex += this.config.matches;
                 }
                 this.updateDom(300);
             }, this.config.rotateInterval);
-        } else if (this.scores.length <= this.config.matches) {
+        } else if (this.games.length <= this.config.matches) {
             clearInterval(this.rotateInterval);
             this.rotateIndex = 0;
         }
+
         this.updateDom(300);
     },
 
-    getDom() {
-        const wrapper = document.createElement('div');
-        const scores = document.createElement('div');
-        const header = document.createElement('header');
-        header.innerHTML = `NHL ${this.modes[this.details.t]} ${this.details.y}`;
-        scores.appendChild(header);
+    /**
+     * @function addFilters
+     * @description Adds the filter used by the nunjuck template.
+     *
+     * @returns {void}
+     */
+    addFilters() {
+        this.nunjucksEnvironment().addFilter('formatStartDate', game => {
+            const now = new Date();
+            const inAWeek = now.setDate(now.getDate() + 7);
+            const start = new Date(game.timestamp);
 
-        if (!this.scores) {
-            const text = document.createElement('div');
-            text.innerHTML = this.translate('LOADING');
-            text.classList.add('dimmed', 'light');
-            scores.appendChild(text);
-        } else {
-            const table = document.createElement('table');
-            table.classList.add('small', 'table');
-
-            table.appendChild(this.createLabelRow());
-
-            const max = Math.min(this.rotateIndex + this.config.matches, this.scores.length);
-            for (let i = this.rotateIndex; i < max; i += 1) {
-                this.appendDataRow(this.scores[i], table);
+            if (start > inAWeek) {
+                return new Intl.DateTimeFormat(config.locale, {
+                    month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+                }).format(start);
             }
 
-            scores.appendChild(table);
-        }
-
-        wrapper.appendChild(scores);
-
-        return wrapper;
-    },
-
-    createLabelRow() {
-        const labelRow = document.createElement('tr');
-
-        const dateLabel = document.createElement('th');
-        const dateIcon = document.createElement('i');
-        dateIcon.classList.add('fa', 'fa-calendar');
-        dateLabel.appendChild(dateIcon);
-        labelRow.appendChild(dateLabel);
-
-        const homeLabel = document.createElement('th');
-        homeLabel.innerHTML = this.translate('HOME');
-        homeLabel.setAttribute('colspan', 3);
-        labelRow.appendChild(homeLabel);
-
-        const vsLabel = document.createElement('th');
-        vsLabel.innerHTML = '';
-        labelRow.appendChild(vsLabel);
-
-        const awayLabel = document.createElement('th');
-        awayLabel.innerHTML = this.translate('AWAY');
-        awayLabel.setAttribute('colspan', 3);
-        labelRow.appendChild(awayLabel);
-
-        return labelRow;
-    },
-
-    appendDataRow(data, appendTo) {
-        const row = document.createElement('tr');
-        row.classList.add('row');
-
-        const date = document.createElement('td');
-        if (data.bsc === 'progress') {
-            if (data.ts === 'PRE GAME') {
-                date.innerHTML = this.translate('PRE_GAME');
-                date.classList.add('dimmed');
-            } else if (['1st', '2nd', '3rd'].includes(data.ts.slice(-3))) {
-                const third = document.createElement('div');
-                third.innerHTML = this.translate(this.states[data.ts.slice(-3)]);
-                if (data.ts.slice(0, 3) !== 'END') {
-                    third.classList.add('live');
-                    date.appendChild(third);
-                    const time = document.createElement('div');
-                    time.classList.add('live');
-                    time.innerHTML = `${data.ts.slice(0, -4)} ${this.translate('TIME_LEFT')}`;
-                    date.appendChild(time);
-                } else {
-                    date.appendChild(third);
-                }
-            }
-        } else if (data.bsc === '' && Object.prototype.hasOwnProperty.call(data, 'starttime')) {
-            date.innerHTML = moment(data.starttime).format(this.config.format);
-        } else if (data.bsc === 'final') {
-            date.innerHTML = this.translate(this.states[data.bs]);
-            date.classList.add('dimmed');
-        } else {
-            date.innerHTML = this.translate('UNKNOWN');
-            date.classList.add('dimmed');
-        }
-        row.appendChild(date);
-
-        const homeTeam = document.createElement('td');
-        homeTeam.classList.add('align-right');
-        const homeTeamSpan = document.createElement('span');
-        homeTeamSpan.innerHTML = this.teams[data.htv];
-        homeTeam.appendChild(homeTeamSpan);
-        row.appendChild(homeTeam);
-
-        const homeLogo = document.createElement('td');
-        const homeIcon = document.createElement('img');
-        homeIcon.src = this.file(`icons/${this.teams[data.htv]}.png`);
-        if (!this.config.colored) {
-            homeIcon.classList.add('icon');
-        }
-        homeLogo.appendChild(homeIcon);
-        row.appendChild(homeLogo);
-
-        const homeScore = document.createElement('td');
-        homeScore.innerHTML = data.hts === '' ? 0 : data.hts;
-        row.appendChild(homeScore);
-
-        const vs = document.createElement('td');
-        vs.innerHTML = ':';
-        row.appendChild(vs);
-
-        const awayScore = document.createElement('td');
-        awayScore.innerHTML = data.ats === '' ? 0 : data.ats;
-        row.appendChild(awayScore);
-
-        const awayLogo = document.createElement('td');
-        const awayIcon = document.createElement('img');
-        awayIcon.src = this.file(`icons/${this.teams[data.atv]}.png`);
-        if (!this.config.colored) {
-            awayIcon.classList.add('icon');
-        }
-        awayLogo.appendChild(awayIcon);
-        row.appendChild(awayLogo);
-
-        const awayTeam = document.createElement('td');
-        awayTeam.classList.add('align-left');
-        const awayTeamSpan = document.createElement('span');
-        awayTeamSpan.innerHTML = this.teams[data.atv];
-        awayTeam.appendChild(awayTeamSpan);
-        row.appendChild(awayTeam);
-
-        appendTo.appendChild(row);
+            return new Intl.DateTimeFormat(config.locale, {
+                weekday: 'short', hour: '2-digit', minute: '2-digit'
+            }).format(start);
+        });
     }
 });

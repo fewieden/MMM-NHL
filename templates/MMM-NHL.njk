@@ -1,0 +1,74 @@
+{% if loading %}
+    <div class="dimmed light">{{ "LOADING" | translate }}</div>
+{% else %}
+    <header>NHL {{ modes[season.mode] | translate }} {{ season.year }}</header>
+    <table class="small table">
+        <thead>
+            <tr>
+                <th><i class="fa fa-calendar"></i></th>
+                <th colspan="{{ 1 + (1 if config.showNames else 0) + (1 if config.showLogos else 0) }}">
+                    {{ "HOME" | translate }}
+                </th>
+                <th></th>
+                <th colspan="{{ 1 + (1 if config.showNames else 0) + (1 if config.showLogos else 0) }}">
+                    {{ "AWAY" | translate }}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for index in range(rotateIndex, maxGames) %}
+                <tr>
+                    <td>
+                        {% if games[index].status.detailed === "Pre-Game" %}
+                            {{ "PRE_GAME" | translate }}
+                        {% elif games[index].status.detailed === "Postponed" %}
+                            {{ "POSTPONED" | translate }}
+                        {% elif games[index].status.abstract === "Preview" %}
+                            {{ games[index] | formatStartDate }}
+                        {% elif games[index].status.abstract === "Live" and games[index].live.period %}
+                            <div class="live">{{ games[index].live.period | translate }}</div>
+                            <div class="live">
+                                {% if games[index].live.timeRemaining === "Final" %}
+                                    {{ "FINAL" | translate }}
+                                {% else %}
+                                    {{ "TIME_LEFT" | translate({TIME: games[index].live.timeRemaining}) }}
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            {% if games[index].live.period === '3rd' %}
+                                {{ "FINAL" | translate }}
+                            {% else %}
+                                {{ ("FINAL_" + games[index].live.period) | translate }}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    {% if config.showNames %}
+                        <td class="align-right">
+                            {{ games[index].teams.home.short }}
+                        </td>
+                    {% endif %}
+                    {% if config.showLogos %}
+                        <td>
+                            <img class="icon {{ "no-color" if not config.colored }}"
+                                 src="https://assets.nhle.com/logos/nhl/svg/{{ games[index].teams.home.short }}_dark.svg"/>
+                        </td>
+                    {% endif %}
+                    <td>{{ games[index].teams.home.score }}</td>
+                    <td>:</td>
+                    <td>{{ games[index].teams.away.score }}</td>
+                    {% if config.showLogos %}
+                        <td>
+                            <img class="icon {{ "no-color" if not config.colored }}"
+                                 src="https://assets.nhle.com/logos/nhl/svg/{{ games[index].teams.away.short }}_dark.svg"/>
+                        </td>
+                    {% endif %}
+                    {% if config.showNames %}
+                        <td class="align-left">
+                            {{ games[index].teams.away.short }}
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
