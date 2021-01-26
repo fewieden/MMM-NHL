@@ -4,7 +4,7 @@
 
 ### Fixed
 
-*
+* Date queries are now set based on timezone `America/Toronto`.
 
 ### Added
 

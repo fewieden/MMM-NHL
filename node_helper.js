@@ -137,9 +137,12 @@ module.exports = NodeHelper.create({
     async fetchSchedule() {
         const date = new Date();
         date.setDate(date.getDate() - this.config.daysInPast);
-        const startDate = date.toISOString().slice(0, 10);
+        const startDate = new Intl.DateTimeFormat('fr-ca', {timeZone: 'America/Toronto'})
+            .format(date);
+
         date.setDate(date.getDate() + this.config.daysInPast + this.config.daysAhead);
-        const endDate = date.toISOString().slice(0, 10);
+        const endDate = new Intl.DateTimeFormat('fr-ca', {timeZone: 'America/Toronto'})
+            .format(date);
 
         const query = qs.stringify({startDate, endDate, expand: 'schedule.linescore'});
         const url = `${BASE_URL}/schedule?${query}`;
