@@ -1,6 +1,6 @@
 # MMM-NHL Changelog
 
-## [Unreleased]
+## [2.1.0]
 
 ### Fixed
 
@@ -9,14 +9,6 @@
 ### Added
 
 * Config option `rollOver`
-
-### Changed
-
-*
-
-### Removed
-
-*
 
 ## [2.0.0]
 
