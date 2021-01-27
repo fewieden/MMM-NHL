@@ -1,5 +1,15 @@
 # MMM-NHL Changelog
 
+## [2.1.0]
+
+### Fixed
+
+* Date queries are now set based on timezone `America/Toronto`.
+
+### Added
+
+* Config option `rollOver`
+
 ## [2.0.0]
 
 ### Added
