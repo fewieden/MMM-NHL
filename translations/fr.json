@@ -1,0 +1,15 @@
+{
+  "HOME": "Domicile",
+  "AWAY": "Visiteur",
+  "PRE_GAME": "Warm Up",
+  "1st": "1ere Period",
+  "2nd": "2nd Period",
+  "3rd": "3eme Period",
+  "OVER_TIME": "Prolongation",
+  "SHOOTOUT": "Tir au but",
+  "FINAL": "Final",
+  "FINAL_OT": "Final (OT)",
+  "FINAL_SO": "Final (SO)",
+  "TIME_LEFT": "{TIME} restant",
+  "POSTPONED": "REM"
+}

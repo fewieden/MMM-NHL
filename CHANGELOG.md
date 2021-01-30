@@ -1,15 +1,45 @@
 # MMM-NHL Changelog
 
-## [1.0.2]
-* Fixed Vegas Icon
-* Removed npm install from README (not needed and is huge)
-* Added options:
-     `gameTimeReloadInterval` for quicker reloads during games
-     `showNames` can toggle team names
-     `showLogos` can toggle team logos
-     `condensed` use shorter names (OT instead of Overtime)
-* Support PPD games (Postponed)
+## [2.1.0]
 
+### Fixed
+
+* Date queries are now set based on timezone `America/Toronto`.
+
+### Added
+
+* Config option `rollOver`
+
+## [2.0.0]
+
+### Added
+
+* Nunjuck templates
+* French translations thanks to [matlem037](https://github.com/matlem037)
+* Dependency `node-fetch`
+* Config option `daysInPast`
+* Config option `daysAhead`
+* Config option `liveReloadInterval` thanks to [dannoh](https://github.com/dannoh).
+* Config option `showNames` thanks to [dannoh](https://github.com/dannoh).
+* Config option `showLogos` thanks to [dannoh](https://github.com/dannoh).
+* Support for game status `postponed` thanks to [dannoh](https://github.com/dannoh).
+* Github actions (linting and changelog enforcer)
+* JSDoc documentation
+
+### Changed
+
+* Switched API for data feed.
+* Display logos from remote.
+* Retrieve team list from API.
+* ESLint recommended instead of airbnb ruleset.
+
+### Removed
+
+* Config option `format`, instead rendering information based on locale.
+* Travis integration
+* Dependency `moment-timezone`
+* Dependency `request`
+* Local team logos
 
 ## [1.0.1]
 
