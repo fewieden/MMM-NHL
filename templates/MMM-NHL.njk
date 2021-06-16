@@ -71,4 +71,51 @@
             {% endfor %}
         </tbody>
     </table>
+    {% if config.showPlayoffSeries and playoffSeries and playoffSeries.length > 0 %}
+        <header style="margin-top: 10px">Series</header>
+        <table class="small table">
+            <thead>
+                <tr>
+                    <th colspan="{{ 1 + (1 if config.showNames else 0) + (1 if config.showLogos else 0) }}">
+                      
+                    </th>
+                    <th></th>
+                    <th colspan="{{ 1 + (1 if config.showNames else 0) + (1 if config.showLogos else 0) }}">
+                        
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for series in playoffSeries %}
+                    <tr>
+                        {% if config.showNames %}
+                            <td class="align-right">
+                                {{ series.teams.home.short }}
+                            </td>
+                        {% endif %}
+                        {% if config.showLogos %}
+                            <td>
+                                <img class="icon {{ "no-color" if not config.colored }}"
+                                    src="https://assets.nhle.com/logos/nhl/svg/{{ series.teams.home.short }}_dark.svg"/>
+                            </td>
+                        {% endif %}
+                        <td>{{ series.teams.home.score }}</td>
+                        <td>:</td>
+                        <td>{{ series.teams.away.score }}</td>
+                        {% if config.showLogos %}
+                            <td>
+                                <img class="icon {{ "no-color" if not config.colored }}"
+                                    src="https://assets.nhle.com/logos/nhl/svg/{{ series.teams.away.short }}_dark.svg"/>
+                            </td>
+                        {% endif %}
+                        {% if config.showNames %}
+                            <td class="align-left">
+                                {{ series.teams.away.short }}
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 {% endif %}
