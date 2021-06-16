@@ -59,7 +59,11 @@ Module.register('MMM-NHL', {
      */
     games: [],
 
+    /**
+     * @member {Series[]} playoffSeries - List of all current playoff series.
+     */
     playoffSeries: [],
+
     /**
      * @member {SeasonDetails} season - Current season details e.g. year and mode.
      */
@@ -231,7 +235,6 @@ Module.register('MMM-NHL', {
      */
     addFilters() {
         this.nunjucksEnvironment().addFilter('formatStartDate', game => {
-            console.log({game: game});
             const now = new Date();
             const inAWeek = now.setDate(now.getDate() + 7);
             const start = new Date(game.timestamp);
