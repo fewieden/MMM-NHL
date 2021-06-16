@@ -28,6 +28,7 @@ const qs = require('querystring');
 const NodeHelper = require('node_helper');
 
 const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
+const BASE_PLAYOFF_URL = 'https://statsapi.web.nhl.com/api/v1/tournaments/playoffs?expand=round.series';
 
 /**
  * Derived team details of a game from API endpoint for easier usage.
@@ -55,6 +56,16 @@ const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
  * @property {object} live - Contains information about the live state of the game.
  * @property {string} live.period - Period of the game e.g. 1st, 2nd, 3rd, OT or SO.
  * @property {string} live.timeRemaining - Remaining time of the current period in format mm:ss.
+ */
+
+/**
+ * Derived game details from API endpoint for easier usage.
+ *
+ * @typedef {object} Series
+ * @property {number} number - Game identifier.
+ * @property {number} round - Start date of the game in UTC timezone.
+ * @property {Team} teams.away - Contains information about the away team.
+ * @property {Team} teams.home - Contains information about the home team.
  */
 
 /**
@@ -159,6 +170,26 @@ module.exports = NodeHelper.create({
     },
 
     /**
+     * @function fetchPlayoffs
+     * @description Retrieves playoff data from the API.
+     * @async
+     *
+     * @returns {object} Raw playoff data from API endpoint.
+     */
+    async fetchPlayoffs() {
+        const response = await fetch(BASE_PLAYOFF_URL);
+
+        if (!response.ok) {
+            console.error(`Fetching NHL playoffs failed: ${response.status} ${response.statusText}. Url: ${BASE_PLAYOFF_URL}`);
+            return;
+        }
+
+        const playoffs = await response.json();
+        playoffs.rounds.sort((a, b) => a.number <= b.number ? 1 : -1);
+        return playoffs;
+    },
+
+    /**
      * @function filterGameByFocus
      * @description Helper function to filter games based on config option.
      *
@@ -236,6 +267,29 @@ module.exports = NodeHelper.create({
     },
 
     /**
+     * @function computePlayoffDetails
+     * @description Computes current playoff details from list of series.
+     *
+     * @param {object} playoffData - List of raw series from API endpoint.
+     *
+     * @returns {Series[]} Current season details.
+     */
+    computePlayoffDetails(playoffData) {
+        if (!playoffData || !playoffData.rounds)
+            return [];
+        const series = [];
+        playoffData.rounds.forEach(r => {
+            r.series.forEach(s => {
+                const parsed = this.parseSeries(s);
+                if (parsed) {
+                    series.push(parsed);
+                }
+            });
+        });
+        return series;
+    },
+
+    /**
      * @function parseTeam
      * @description Transforms raw team information for easier usage.
      *
@@ -245,12 +299,33 @@ module.exports = NodeHelper.create({
      * @returns {Team} Parsed team information.
      */
     parseTeam(teams = {}, type) {
+        const team = teams[type];
+        if (!team) {
+            console.error({NoTeamFond: teams});
+            return {};
+        }
         return {
-            id: teams[type].team.id,
-            name: teams[type].team.name,
-            short: this.teamMapping[teams[type].team.id],
-            score: teams[type].score
+            id: team.team.id,
+            name: team.team.name,
+            short: this.teamMapping[team.team.id],
+            score: team.score
         };
+    },
+
+    /**
+     * @function parsePlayoffTeam
+     * @description Transforms raw game information for easier usage.
+     *
+     * @param {object} teamData - Raw game information.
+     * 
+     * @param {number} index - Which index of teamData to operate on.
+     *
+     * @returns {Game} Parsed game information.
+     */
+    parsePlayoffTeam(teamData = {}, index) {
+        const team = this.parseTeam(teamData, index);
+        team.score = teamData[index].seriesRecord.wins;
+        return team;
     },
 
     /**
@@ -279,6 +354,27 @@ module.exports = NodeHelper.create({
                 timeRemaining: game.linescore.currentPeriodTimeRemaining
             }
         };
+    },
+
+    /**
+     * @function parseSeries
+     * @description Transforms raw series information for easier usage.
+     *
+     * @param {object} series - Raw series information.
+     *
+     * @returns {Series} Parsed series information.
+     */
+    parseSeries(series = {}) {
+        if (!series.matchupTeams || series.matchupTeams.length === 0)
+            return null;
+        return {
+            number: series.number,
+            round: series.round.number,
+            teams: {
+                home: this.parsePlayoffTeam(series.matchupTeams, 0),
+                away: this.parsePlayoffTeam(series.matchupTeams, 1),
+            }
+        }
     },
 
     /**
@@ -331,6 +427,13 @@ module.exports = NodeHelper.create({
 
         this.setNextandLiveGames(rollOverGames);
         this.sendSocketNotification('SCHEDULE', {games: rollOverGames, season});
+        if (season.mode === 'P' || games.length === 0) {
+
+            const playoffData = await this.fetchPlayoffs();
+            const playoffSeries = this.computePlayoffDetails(playoffData).filter(s => s.round >= playoffData.defaultRound);
+
+            this.sendSocketNotification('PLAYOFFS', playoffSeries);
+        }
     },
 
     /**
