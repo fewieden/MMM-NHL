@@ -197,7 +197,7 @@ Module.register('MMM-NHL', {
             this.games = payload.games;
             this.season = payload.season;
             this.setRotateInterval();
-        } else if(notification === 'PLAYOFFS') {
+        } else if (notification === 'PLAYOFFS') {
             this.playoffSeries = payload;
             this.updateDom(300);
         }

@@ -275,8 +275,9 @@ module.exports = NodeHelper.create({
      * @returns {Series[]} Current season details.
      */
     computePlayoffDetails(playoffData) {
-        if (!playoffData || !playoffData.rounds)
+        if (!playoffData || !playoffData.rounds) {
             return [];
+        }
         const series = [];
         playoffData.rounds.forEach(r => {
             r.series.forEach(s => {
@@ -317,7 +318,7 @@ module.exports = NodeHelper.create({
      * @description Transforms raw game information for easier usage.
      *
      * @param {object} teamData - Raw game information.
-     * 
+     *
      * @param {number} index - Which index of teamData to operate on.
      *
      * @returns {Game} Parsed game information.
@@ -365,8 +366,9 @@ module.exports = NodeHelper.create({
      * @returns {Series} Parsed series information.
      */
     parseSeries(series = {}) {
-        if (!series.matchupTeams || series.matchupTeams.length === 0)
+        if (!series.matchupTeams || series.matchupTeams.length === 0) {
             return null;
+        }
         return {
             number: series.number,
             round: series.round.number,
