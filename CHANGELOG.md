@@ -1,5 +1,12 @@
 # MMM-NHL Changelog
 
+## [2.2.1]
+
+### Fixed
+
+* Changed Logo Urls to support all teams (specifically all-star teams)
+* Added support for teams with no short name when showNames is true
+
 ## [2.2.0]
 
 ### Added
