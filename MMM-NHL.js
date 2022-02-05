@@ -43,13 +43,13 @@ Module.register('MMM-NHL', {
         '1st': '1ST_PERIOD',
         '2nd': '2ND_PERIOD',
         '3rd': '3RD_PERIOD',
-        'OT': 'OVER_TIME',
-        'SO': 'SHOOTOUT',
-        'SHOOTOUT': 'SHOOTOUT',
-        'FINAL': 'FINAL',
+        OT: 'OVER_TIME',
+        SO: 'SHOOTOUT',
+        SHOOTOUT: 'SHOOTOUT',
+        FINAL: 'FINAL',
         'FINAL OT': 'FINAL_OVERTIME',
         'FINAL SO': 'FINAL_SHOOTOUT',
-        'PPD': 'PPD'
+        PPD: 'PPD'
     },
 
     /**
