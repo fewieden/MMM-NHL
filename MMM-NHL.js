@@ -60,6 +60,12 @@ Module.register('MMM-NHL', {
      * @member {Game[]} games - List of all games matching focus and timespan config options.
      */
     games: [],
+
+    /**
+     * @member {Series[]} playoffSeries - List of all current playoff series.
+     */
+    playoffSeries: [],
+
     /**
      * @member {SeasonDetails} season - Current season details e.g. year and mode.
      */
@@ -85,6 +91,7 @@ Module.register('MMM-NHL', {
      * @property {number} daysAhead - Amount of days a match should be displayed before it starts.
      * @property {boolean} showNames - Flag to show team names.
      * @property {boolean} showLogos - Flag to show club logos.
+     * @property {boolean} showPlayoffSeries - Flag to show playoff series status during playoffs.
      * @property {boolean} rollOverGames - Flag to show today's games and previous/next day based on game status.
      */
     defaults: {
@@ -99,6 +106,7 @@ Module.register('MMM-NHL', {
         daysAhead: 7,
         showNames: true,
         showLogos: true,
+        showPlayoffSeries: true,
         rollOver: false
     },
 
@@ -152,6 +160,7 @@ Module.register('MMM-NHL', {
             modes: this.modes,
             season: this.season,
             games: this.games,
+            playoffSeries: this.playoffSeries,
             rotateIndex: this.rotateIndex,
             maxGames: Math.min(this.games.length, this.rotateIndex + this.config.matches),
             config: this.config
@@ -191,6 +200,9 @@ Module.register('MMM-NHL', {
             this.games = payload.games;
             this.season = payload.season;
             this.setRotateInterval();
+        } else if (notification === 'PLAYOFFS') {
+            this.playoffSeries = payload;
+            this.updateDom(300);
         }
     },
 
