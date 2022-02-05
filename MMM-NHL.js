@@ -43,11 +43,13 @@ Module.register('MMM-NHL', {
         '1st': '1ST_PERIOD',
         '2nd': '2ND_PERIOD',
         '3rd': '3RD_PERIOD',
-        OT: 'OVER_TIME',
-        SO: 'SHOOTOUT',
-        FINAL: 'FINAL',
+        'OT': 'OVER_TIME',
+        'SO': 'SHOOTOUT',
+        'SHOOTOUT': 'SHOOTOUT',
+        'FINAL': 'FINAL',
         'FINAL OT': 'FINAL_OVERTIME',
-        'FINAL SO': 'FINAL_SHOOTOUT'
+        'FINAL SO': 'FINAL_SHOOTOUT',
+        'PPD': 'PPD'
     },
 
     /**
@@ -95,6 +97,7 @@ Module.register('MMM-NHL', {
     defaults: {
         colored: false,
         focus_on: false,
+        condensed: false,
         matches: 6,
         rotateInterval: 20 * 1000,
         reloadInterval: 30 * 60 * 1000,
