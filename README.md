@@ -4,7 +4,7 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 
 ## Examples
 
-![](.github/example_nhl.png) ![](.github/example_nhl_2.png) ![](.github/example_nhl_3.png)
+![](.github/example_nhl.png) ![](.github/example_nhl_2.png) ![](.github/example_nhl_3.png) ![](.github/example_nhl_4.png) ![](.github/example_nhl_5.png)
 
 ## Dependencies
 
@@ -43,7 +43,7 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 | `liveReloadInterval` | `60000 (1 min)` | How often should the data be fetched during a live game. |
 | `showNames` | `true` | Should team names be displayed? |
 | `showLogos` | `true` | Should team logos be displayed? |
-| `showPlayoffSeries` | `true` | Should playoff series information (if in playoffs)? |
+| `showPlayoffSeries` | `true` | Should playoff series be displayed (if in playoffs)? |
 | `rollOver` | `false` | Displays today's games and based on game status also yesterdays games or tomorrows games. Automatically overrides `daysInPast` and `daysAhead` to 1. |
 
 ## Global config

@@ -11,7 +11,7 @@
 
 ### Added
 
-* Playoff series display
+* Added new config option `showPlayoffSeries` to display playoff series information
 
 ## [2.1.0]
 

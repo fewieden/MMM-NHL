@@ -97,7 +97,6 @@ Module.register('MMM-NHL', {
     defaults: {
         colored: false,
         focus_on: false,
-        condensed: false,
         matches: 6,
         rotateInterval: 20 * 1000,
         reloadInterval: 30 * 60 * 1000,

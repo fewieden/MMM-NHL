@@ -72,19 +72,8 @@
         </tbody>
     </table>
     {% if config.showPlayoffSeries and playoffSeries and playoffSeries.length > 0 %}
-        <header style="margin-top: 10px">Series</header>
+        <header style="margin-top: 10px">{{ "SERIES"  | translate }}</header>
         <table class="small table">
-            <thead>
-                <tr>
-                    <th colspan="{{ 1 + (1 if config.showNames else 0) + (1 if config.showLogos else 0) }}">
-                      
-                    </th>
-                    <th></th>
-                    <th colspan="{{ 1 + (1 if config.showNames else 0) + (1 if config.showLogos else 0) }}">
-                        
-                    </th>
-                </tr>
-            </thead>
             <tbody>
                 {% for series in playoffSeries %}
                     <tr>
@@ -96,16 +85,16 @@
                         {% if config.showLogos %}
                             <td>
                                 <img class="icon {{ "no-color" if not config.colored }}"
-                                    src="https://assets.nhle.com/logos/nhl/svg/{{ series.teams.home.short }}_dark.svg"/>
+                                    src="https://www-league.nhlstatic.com/images/logos/teams-20212022-dark/{{ series.teams.home.id }}.svg"/>
                             </td>
                         {% endif %}
-                        <td>{{ series.teams.home.score }}</td>
+                        <d>{{ series.teams.home.score }}</td>
                         <td>:</td>
                         <td>{{ series.teams.away.score }}</td>
                         {% if config.showLogos %}
                             <td>
                                 <img class="icon {{ "no-color" if not config.colored }}"
-                                    src="https://assets.nhle.com/logos/nhl/svg/{{ series.teams.away.short }}_dark.svg"/>
+                                    src="https://www-league.nhlstatic.com/images/logos/teams-20212022-dark/{{ series.teams.away.id }}.svg"/>
                             </td>
                         {% endif %}
                         {% if config.showNames %}
