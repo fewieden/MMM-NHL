@@ -10,7 +10,6 @@
 }
 
 .MMM-NHL .no-color {
-    -webkit-filter: grayscale(100%);
     filter: grayscale(100%);
 }
 
