@@ -5,7 +5,7 @@
         "sourceType": "module"
     },
     "settings": {
-        "import/core-modules": [ "node_helper" ]
+        "import/core-modules": ["logger", "node_helper"]
     },
     "env": {
         "browser": true,
@@ -28,7 +28,6 @@
         "curly": ["error", "all"],
         "array-bracket-spacing": 0,
         "space-before-function-paren": 0,
-        "object-curly-spacing": ["error", "never"],
         "object-property-newline": ["error", { "allowAllPropertiesOnSameLine": true }]
     }
 }

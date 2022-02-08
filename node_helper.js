@@ -22,12 +22,19 @@ const fetch = require('node-fetch');
 const qs = require('querystring');
 
 /**
+ * @external logger
+ * @see https://github.com/MichMich/MagicMirror/blob/master/js/logger.js
+ */
+const Log = require('logger');
+
+/**
  * @external node_helper
  * @see https://github.com/MichMich/MagicMirror/blob/master/js/node_helper.js
  */
 const NodeHelper = require('node_helper');
 
 const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
+const BASE_PLAYOFF_URL = 'https://statsapi.web.nhl.com/api/v1/tournaments/playoffs?expand=round.series';
 
 /**
  * Derived team details of a game from API endpoint for easier usage.
@@ -58,6 +65,16 @@ const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
  */
 
 /**
+ * Derived game details from API endpoint for easier usage.
+ *
+ * @typedef {object} Series
+ * @property {number} number - Game identifier.
+ * @property {number} round - Start date of the game in UTC timezone.
+ * @property {Team} teams.away - Contains information about the away team.
+ * @property {Team} teams.home - Contains information about the home team.
+ */
+
+/**
  * Derived season details from API endpoint for easier usage.
  *
  * @typedef {object} SeasonDetails
@@ -71,9 +88,12 @@ const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
  *
  * @requires external:node-fetch
  * @requires external:querystring
+ * @requires external:logger
  * @requires external:node_helper
  */
 module.exports = NodeHelper.create({
+    /** @member {string} requiresVersion - Defines the minimum version of MagicMirror to run this node_helper. */
+    requiresVersion: '2.15.0',
     /** @member {?Game} nextGame - The next upcoming game is stored in this variable. */
     nextGame: null,
     /** @member {Game[]} liveGames - List of all ongoing games. */
@@ -113,12 +133,12 @@ module.exports = NodeHelper.create({
         const response = await fetch(`${BASE_URL}/teams`);
 
         if (!response.ok) {
-            console.error(`Initializing NHL teams failed: ${response.status} ${response.statusText}`);
+            Log.error(`Initializing NHL teams failed: ${response.status} ${response.statusText}`);
 
             return;
         }
 
-        const {teams} = await response.json();
+        const { teams } = await response.json();
 
         this.teamMapping = teams.reduce((mapping, team) => {
             mapping[team.id] = team.abbreviation;
@@ -137,25 +157,45 @@ module.exports = NodeHelper.create({
     async fetchSchedule() {
         const date = new Date();
         date.setDate(date.getDate() - this.config.daysInPast);
-        const startDate = new Intl.DateTimeFormat('fr-ca', {timeZone: 'America/Toronto'})
+        const startDate = new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' })
             .format(date);
 
         date.setDate(date.getDate() + this.config.daysInPast + this.config.daysAhead);
-        const endDate = new Intl.DateTimeFormat('fr-ca', {timeZone: 'America/Toronto'})
+        const endDate = new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' })
             .format(date);
 
-        const query = qs.stringify({startDate, endDate, expand: 'schedule.linescore'});
+        const query = qs.stringify({ startDate, endDate, expand: 'schedule.linescore' });
         const url = `${BASE_URL}/schedule?${query}`;
         const response = await fetch(url);
 
         if (!response.ok) {
-            console.error(`Fetching NHL schedule failed: ${response.status} ${response.statusText}. Url: ${url}`);
+            Log.error(`Fetching NHL schedule failed: ${response.status} ${response.statusText}. Url: ${url}`);
             return;
         }
 
-        const {dates} = await response.json();
+        const { dates } = await response.json();
 
-        return dates.map(({date, games}) => games.map(game => ({...game, gameDay: date}))).flat();
+        return dates.map(({ date, games }) => games.map(game => ({ ...game, gameDay: date }))).flat();
+    },
+
+    /**
+     * @function fetchPlayoffs
+     * @description Retrieves playoff data from the API.
+     * @async
+     *
+     * @returns {object} Raw playoff data from API endpoint.
+     */
+    async fetchPlayoffs() {
+        const response = await fetch(BASE_PLAYOFF_URL);
+
+        if (!response.ok) {
+            Log.error(`Fetching NHL playoffs failed: ${response.status} ${response.statusText}.`);
+            return;
+        }
+
+        const playoffs = await response.json();
+        playoffs.rounds.sort((a, b) => a.number <= b.number ? 1 : -1);
+        return playoffs;
     },
 
     /**
@@ -191,7 +231,7 @@ module.exports = NodeHelper.create({
             return games;
         }
 
-        const date = new Intl.DateTimeFormat('fr-ca', {timeZone: 'America/Toronto'})
+        const date = new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' })
             .format(new Date());
 
         const yesterday = games.filter(game => game.gameDay < date);
@@ -236,6 +276,30 @@ module.exports = NodeHelper.create({
     },
 
     /**
+     * @function computePlayoffDetails
+     * @description Computes current playoff details from list of series.
+     *
+     * @param {object} playoffData - List of raw series from API endpoint.
+     *
+     * @returns {Series[]} Current season details.
+     */
+    computePlayoffDetails(playoffData) {
+        if (!playoffData || !playoffData.rounds) {
+            return [];
+        }
+        const series = [];
+        playoffData.rounds.forEach(r => {
+            r.series.forEach(s => {
+                const parsed = this.parseSeries(s);
+                if (parsed) {
+                    series.push(parsed);
+                }
+            });
+        });
+        return series;
+    },
+
+    /**
      * @function parseTeam
      * @description Transforms raw team information for easier usage.
      *
@@ -245,12 +309,33 @@ module.exports = NodeHelper.create({
      * @returns {Team} Parsed team information.
      */
     parseTeam(teams = {}, type) {
+        const team = teams[type];
+        if (!team) {
+            Log.error({ NoTeamFound: teams, type });
+            return {};
+        }
         return {
-            id: teams[type].team.id,
-            name: teams[type].team.name,
-            short: this.teamMapping[teams[type].team.id],
-            score: teams[type].score
+            id: team.team.id,
+            name: team.team.name,
+            short: this.teamMapping[team.team.id],
+            score: team.score
         };
+    },
+
+    /**
+     * @function parsePlayoffTeam
+     * @description Transforms raw game information for easier usage.
+     *
+     * @param {object} teamData - Raw game information.
+     *
+     * @param {number} index - Which index of teamData to operate on.
+     *
+     * @returns {Game} Parsed game information.
+     */
+    parsePlayoffTeam(teamData = {}, index) {
+        const team = this.parseTeam(teamData, index);
+        team.score = teamData[index].seriesRecord.wins;
+        return team;
     },
 
     /**
@@ -279,6 +364,28 @@ module.exports = NodeHelper.create({
                 timeRemaining: game.linescore.currentPeriodTimeRemaining
             }
         };
+    },
+
+    /**
+     * @function parseSeries
+     * @description Transforms raw series information for easier usage.
+     *
+     * @param {object} series - Raw series information.
+     *
+     * @returns {Series} Parsed series information.
+     */
+    parseSeries(series = {}) {
+        if (!series.matchupTeams || series.matchupTeams.length === 0) {
+            return null;
+        }
+        return {
+            number: series.number,
+            round: series.round.number,
+            teams: {
+                home: this.parsePlayoffTeam(series.matchupTeams, 0),
+                away: this.parsePlayoffTeam(series.matchupTeams, 1),
+            }
+        }
     },
 
     /**
@@ -330,7 +437,14 @@ module.exports = NodeHelper.create({
         const rollOverGames = this.filterRollOverGames(games);
 
         this.setNextandLiveGames(rollOverGames);
-        this.sendSocketNotification('SCHEDULE', {games: rollOverGames, season});
+        this.sendSocketNotification('SCHEDULE', { games: rollOverGames, season });
+        if (season.mode === 'P' || games.length === 0) {
+
+            const playoffData = await this.fetchPlayoffs();
+            const playoffSeries = this.computePlayoffDetails(playoffData).filter(s => s.round >= playoffData.defaultRound);
+
+            this.sendSocketNotification('PLAYOFFS', playoffSeries);
+        }
     },
 
     /**
