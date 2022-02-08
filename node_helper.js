@@ -22,6 +22,12 @@ const fetch = require('node-fetch');
 const qs = require('querystring');
 
 /**
+ * @external logger
+ * @see https://github.com/MichMich/MagicMirror/blob/master/js/logger.js
+ */
+const Log = require('logger');
+
+/**
  * @external node_helper
  * @see https://github.com/MichMich/MagicMirror/blob/master/js/node_helper.js
  */
@@ -82,9 +88,12 @@ const BASE_PLAYOFF_URL = 'https://statsapi.web.nhl.com/api/v1/tournaments/playof
  *
  * @requires external:node-fetch
  * @requires external:querystring
+ * @requires external:logger
  * @requires external:node_helper
  */
 module.exports = NodeHelper.create({
+    /** @member {string} requiresVersion - Defines the minimum version of MagicMirror to run this node_helper. */
+    requiresVersion: '2.15.0',
     /** @member {?Game} nextGame - The next upcoming game is stored in this variable. */
     nextGame: null,
     /** @member {Game[]} liveGames - List of all ongoing games. */
@@ -124,7 +133,7 @@ module.exports = NodeHelper.create({
         const response = await fetch(`${BASE_URL}/teams`);
 
         if (!response.ok) {
-            console.error(`Initializing NHL teams failed: ${response.status} ${response.statusText}`);
+            Log.error(`Initializing NHL teams failed: ${response.status} ${response.statusText}`);
 
             return;
         }
@@ -160,7 +169,7 @@ module.exports = NodeHelper.create({
         const response = await fetch(url);
 
         if (!response.ok) {
-            console.error(`Fetching NHL schedule failed: ${response.status} ${response.statusText}. Url: ${url}`);
+            Log.error(`Fetching NHL schedule failed: ${response.status} ${response.statusText}. Url: ${url}`);
             return;
         }
 
@@ -180,7 +189,7 @@ module.exports = NodeHelper.create({
         const response = await fetch(BASE_PLAYOFF_URL);
 
         if (!response.ok) {
-            console.error(`Fetching NHL playoffs failed: ${response.status} ${response.statusText}.`);
+            Log.error(`Fetching NHL playoffs failed: ${response.status} ${response.statusText}.`);
             return;
         }
 
@@ -302,7 +311,7 @@ module.exports = NodeHelper.create({
     parseTeam(teams = {}, type) {
         const team = teams[type];
         if (!team) {
-            console.error({NoTeamFound: teams, type});
+            Log.error({NoTeamFound: teams, type});
             return {};
         }
         return {
