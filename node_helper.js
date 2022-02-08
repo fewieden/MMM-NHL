@@ -180,7 +180,7 @@ module.exports = NodeHelper.create({
         const response = await fetch(BASE_PLAYOFF_URL);
 
         if (!response.ok) {
-            console.error(`Fetching NHL playoffs failed: ${response.status} ${response.statusText}. Url: ${BASE_PLAYOFF_URL}`);
+            console.error(`Fetching NHL playoffs failed: ${response.status} ${response.statusText}.`);
             return;
         }
 
@@ -302,7 +302,7 @@ module.exports = NodeHelper.create({
     parseTeam(teams = {}, type) {
         const team = teams[type];
         if (!team) {
-            console.error({NoTeamFond: teams});
+            console.error({NoTeamFound: teams, type});
             return {};
         }
         return {
