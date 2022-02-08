@@ -182,7 +182,7 @@ Module.register('MMM-NHL', {
             this.config.daysAhead = 1;
         }
 
-        this.sendSocketNotification('CONFIG', {config: this.config});
+        this.sendSocketNotification('CONFIG', { config: this.config });
     },
 
     /**

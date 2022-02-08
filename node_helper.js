@@ -138,7 +138,7 @@ module.exports = NodeHelper.create({
             return;
         }
 
-        const {teams} = await response.json();
+        const { teams } = await response.json();
 
         this.teamMapping = teams.reduce((mapping, team) => {
             mapping[team.id] = team.abbreviation;
@@ -157,14 +157,14 @@ module.exports = NodeHelper.create({
     async fetchSchedule() {
         const date = new Date();
         date.setDate(date.getDate() - this.config.daysInPast);
-        const startDate = new Intl.DateTimeFormat('fr-ca', {timeZone: 'America/Toronto'})
+        const startDate = new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' })
             .format(date);
 
         date.setDate(date.getDate() + this.config.daysInPast + this.config.daysAhead);
-        const endDate = new Intl.DateTimeFormat('fr-ca', {timeZone: 'America/Toronto'})
+        const endDate = new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' })
             .format(date);
 
-        const query = qs.stringify({startDate, endDate, expand: 'schedule.linescore'});
+        const query = qs.stringify({ startDate, endDate, expand: 'schedule.linescore' });
         const url = `${BASE_URL}/schedule?${query}`;
         const response = await fetch(url);
 
@@ -173,9 +173,9 @@ module.exports = NodeHelper.create({
             return;
         }
 
-        const {dates} = await response.json();
+        const { dates } = await response.json();
 
-        return dates.map(({date, games}) => games.map(game => ({...game, gameDay: date}))).flat();
+        return dates.map(({ date, games }) => games.map(game => ({ ...game, gameDay: date }))).flat();
     },
 
     /**
@@ -231,7 +231,7 @@ module.exports = NodeHelper.create({
             return games;
         }
 
-        const date = new Intl.DateTimeFormat('fr-ca', {timeZone: 'America/Toronto'})
+        const date = new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' })
             .format(new Date());
 
         const yesterday = games.filter(game => game.gameDay < date);
@@ -311,7 +311,7 @@ module.exports = NodeHelper.create({
     parseTeam(teams = {}, type) {
         const team = teams[type];
         if (!team) {
-            Log.error({NoTeamFound: teams, type});
+            Log.error({ NoTeamFound: teams, type });
             return {};
         }
         return {
@@ -437,7 +437,7 @@ module.exports = NodeHelper.create({
         const rollOverGames = this.filterRollOverGames(games);
 
         this.setNextandLiveGames(rollOverGames);
-        this.sendSocketNotification('SCHEDULE', {games: rollOverGames, season});
+        this.sendSocketNotification('SCHEDULE', { games: rollOverGames, season });
         if (season.mode === 'P' || games.length === 0) {
 
             const playoffData = await this.fetchPlayoffs();
