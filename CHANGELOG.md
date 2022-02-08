@@ -1,17 +1,23 @@
 # MMM-NHL Changelog
 
-## [2.2.1]
+## [2.2.0]
+
+MagicMirror² version >= 2.15.0 required.
+
+### Added
+
+* Added new config option `showPlayoffSeries` to display playoff series information
+
+### Changed
+
+* Node helper logs are now done through MagicMirror logger
+* Updated project config files
+* Updated Github config files
 
 ### Fixed
 
 * Changed Logo Urls to support all teams (specifically all-star teams)
 * Added support for teams with no short name when showNames is true
-
-## [2.2.0]
-
-### Added
-
-* Added new config option `showPlayoffSeries` to display playoff series information
 
 ## [2.1.0]
 
