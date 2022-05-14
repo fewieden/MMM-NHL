@@ -7,7 +7,7 @@
  * @see  https://github.com/fewieden/MMM-NHL
  */
 
-/* global config */
+/* global Module Log config */
 
 /**
  * @external Module

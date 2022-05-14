@@ -5,6 +5,7 @@
   "source": {
     "include": [
       "package.json",
+      "LICENSE",
       "README.md"
     ],
     "exclude": [
