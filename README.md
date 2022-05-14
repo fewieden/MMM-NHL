@@ -1,6 +1,6 @@
 # MMM-NHL [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/fewieden/MMM-NHL/master/LICENSE) ![Build status](https://github.com/fewieden/MMM-NHL/workflows/build/badge.svg) [![Code Climate](https://codeclimate.com/github/fewieden/MMM-NHL/badges/gpa.svg?style=flat)](https://codeclimate.com/github/fewieden/MMM-NHL) [![Known Vulnerabilities](https://snyk.io/test/github/fewieden/mmm-nhl/badge.svg)](https://snyk.io/test/github/fewieden/mmm-nhl)
 
-National Hockey League Module for MagicMirror<sup>2</sup>
+National Hockey League Module for MagicMirror²
 
 ## Examples
 
@@ -8,7 +8,7 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 
 ## Dependencies
 
-* An installation of [MagicMirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
+* An installation of [MagicMirror²](https://github.com/MichMich/MagicMirror)
 * npm
 * [node-fetch](https://www.npmjs.com/package/node-fetch)
 
@@ -50,9 +50,9 @@ National Hockey League Module for MagicMirror<sup>2</sup>
 
 | **Option** | **Default** | **Description** |
 | --- | --- | --- |
-| `locale` | `undefined` | By default it is using your system settings. You can specify the locale in the global MagicMirror config. Possible values are for e.g.: `'en-US'` or `'de-DE'`. |
+| `locale` | `undefined` | By default it is using your system settings. You can specify the locale in the global MagicMirror² config. Possible values are for e.g.: `'en-US'` or `'de-DE'`. |
 
-To set a global config you have top set the value in your config.js file inside the MagicMirror project.
+To set a global config you have top set the value in your config.js file inside the MagicMirror² project.
 
 ![](.github/global.png)
 
