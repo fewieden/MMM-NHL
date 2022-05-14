@@ -1,5 +1,18 @@
 # MMM-NHL Changelog
 
+## [2.3.0]
+
+### Changed
+
+* Updated dependencies
+* Updated Github config files
+* Updated project config files
+* Uniform spelling for MagicMirror²
+
+### Fixed
+
+* Playoff series display
+
 ## [2.2.0]
 
 MagicMirror² version >= 2.15.0 required.

@@ -8,14 +8,14 @@ engines:
         - javascript
   eslint:
     enabled: true
-    channel: "eslint-6"
+    channel: "eslint-7"
     checks:
       import/no-unresolved:
         enabled: false
   fixme:
     enabled: true
   markdownlint:
-      enabled: true
+    enabled: true
 ratings:
   paths:
     - "**.js"

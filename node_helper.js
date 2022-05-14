@@ -92,7 +92,7 @@ const BASE_PLAYOFF_URL = 'https://statsapi.web.nhl.com/api/v1/tournaments/playof
  * @requires external:node_helper
  */
 module.exports = NodeHelper.create({
-    /** @member {string} requiresVersion - Defines the minimum version of MagicMirror to run this node_helper. */
+    /** @member {string} requiresVersion - Defines the minimum version of MagicMirror² to run this node_helper. */
     requiresVersion: '2.15.0',
     /** @member {?Game} nextGame - The next upcoming game is stored in this variable. */
     nextGame: null,
