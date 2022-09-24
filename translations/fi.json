@@ -1,0 +1,16 @@
+{
+  "HOME": "Koti",
+  "AWAY": "Vieras",
+  "PRE_GAME": "Lämmittely",
+  "1st": "1. Erä",
+  "2nd": "2. Erä",
+  "3rd": "3. Erä",
+  "OVER_TIME": "JA",
+  "SHOOTOUT": "VL",
+  "FINAL": "Päättynyt",
+  "FINAL_OT": "Päättynyt (JA)",
+  "FINAL_SO": "Päättynyt (VL)",
+  "TIME_LEFT": "{TIME} jäljellä",
+  "POSTPONED": "Siirretty",
+  "SERIES": "Sarja"
+}
