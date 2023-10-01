@@ -1,5 +1,11 @@
 # MMM-NHL Changelog
 
+## [2.3.1]
+
+### Fixed
+
+* Team logos
+
 ## [2.3.0]
 
 ### Changed
