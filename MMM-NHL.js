@@ -120,7 +120,8 @@ Module.register('MMM-NHL', {
         return {
             en: 'translations/en.json',
             de: 'translations/de.json',
-            fr: 'translations/fr.json'
+            fr: 'translations/fr.json',
+            fi: 'translations/fi.json'
         };
     },
 
