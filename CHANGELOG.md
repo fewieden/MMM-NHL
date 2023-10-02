@@ -1,5 +1,11 @@
 # MMM-NHL Changelog
 
+## [2.3.1]
+
+### Added
+
+* Finnish translations
+
 ## [2.3.0]
 
 ### Changed
