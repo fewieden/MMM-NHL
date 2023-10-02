@@ -2,7 +2,11 @@
 
 ## [2.3.1]
 
-Thanks to @parnic @dannoh for their contributions.
+Thanks to @parnic @dannoh @timpeer for their contributions.
+
+### Added
+
+* Finnish translations
 
 ### Fixed
 
