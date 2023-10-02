@@ -1,6 +1,6 @@
 {
   "name": "mmm-nhl",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "National Hockey League Module for MagicMirror²",
   "scripts": {
     "docs": "jsdoc -c jsdoc.json .",
