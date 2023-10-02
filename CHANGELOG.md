@@ -1,5 +1,15 @@
 # MMM-NHL Changelog
 
+## [Unreleased]
+
+### Fixed
+
+### Added
+
+### Changed
+
+### Removed
+
 ## [2.3.1]
 
 Thanks to @parnic @dannoh @timpeer for their contributions.
