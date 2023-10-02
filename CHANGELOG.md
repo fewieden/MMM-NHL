@@ -1,20 +1,12 @@
 # MMM-NHL Changelog
 
-## [Unreleased]
-
-### Fixed
-
-### Added
-
-### Changed
-
-### Removed
-
 ## [2.3.1]
 
+Thanks to @parnic @dannoh for their contributions.
+
 ### Fixed
 
-* Team logos
+* Team logo images for the 2023-2024 season
 
 ## [2.3.0]
 
