@@ -4,6 +4,8 @@
 
 ### Fixed
 
+* Team logo images for the 2023-2024 season
+
 ### Added
 
 ### Changed
