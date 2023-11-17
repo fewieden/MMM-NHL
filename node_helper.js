@@ -188,6 +188,7 @@ module.exports = NodeHelper.create({
 
             const score = games.find(score => score.id === game.id);
             game.timeRemaining = score?.clock?.timeRemaining;
+            game.inIntermission = score?.clock?.inIntermission;
         }
 
         return schedule;
@@ -380,7 +381,7 @@ module.exports = NodeHelper.create({
             live: {
                 period: this.getNumberWithOrdinal(game.periodDescriptor.number),
                 periodType: game.periodDescriptor.periodType,
-                timeRemaining: game.timeRemaining
+                timeRemaining: game.inIntermission ? '00:00' : game.timeRemaining,
             }
         };
     },
