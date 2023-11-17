@@ -19,17 +19,17 @@
             {% for index in range(rotateIndex, maxGames) %}
                 <tr>
                     <td>
-                        {% if games[index].gameState === "PRE" %}
+                        {% if games[index].status.detailed === "PRE" %}
                             {{ "PRE_GAME" | translate }}
-                        {% elif games[index].gameState === "Postponed - todo: find out what this state is in new api" %}
+                        {% elif games[index].status.detailed === "Postponed - todo: find out what this state is in new api" %}
                             {{ "POSTPONED" | translate }}
-                        {% elif games[index].gameState === "FUT" %}
+                        {% elif games[index].status.abstract === "FUT" %}
                             {{ games[index] | formatStartDate }}
-                        {% elif (games[index].gameState === "LIVE" or games[index].gameState === "CRIT") and games[index].live.period %}
-                            {% if games[index].live.timeRemaining or games[index].gameState === "CRIT" %}
+                        {% elif (games[index].status.abstract === "LIVE" or games[index].status.detailed === "CRIT") and games[index].live.period %}
+                            {% if games[index].live.timeRemaining or games[index].status.detailed === "CRIT" %}
                                 <div class="live">{{ games[index].live.period | translate }}</div>
                                 <div class="live">
-                                    {% if games[index].gameState === "CRIT" %}
+                                    {% if games[index].status.detailed === "CRIT" %}
                                         {{ "FINAL" | translate }}
                                     {% else %}
                                         {{ "TIME_LEFT" | translate({TIME: games[index].live.timeRemaining}) }}

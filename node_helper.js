@@ -249,7 +249,7 @@ module.exports = NodeHelper.create({
 
         const ongoingStates = ['OFF', 'CRIT', 'LIVE'];
 
-        if (today.some(game => ongoingStates.includes(game.gameState))) {
+        if (today.some(game => ongoingStates.includes(game.status.abstract))) {
             return [...today, ...tomorrow];
         }
 
@@ -362,7 +362,10 @@ module.exports = NodeHelper.create({
             id: game.id,
             timestamp: game.gameDate,
             gameDay: game.gameDay,
-            gameState: game.gameState,
+            status: {
+                abstract: game.gameState,
+                detailed: game.gameState,
+            },
             teams: {
                 away: this.parseTeam(game.awayTeam),
                 home: this.parseTeam(game.homeTeam)
@@ -420,8 +423,8 @@ module.exports = NodeHelper.create({
      * @returns {void}
      */
     setNextandLiveGames(games) {
-        this.nextGame = games.find(game => game.gameState === 'FUT');
-        this.liveGames = games.filter(game => game.gameState === 'LIVE' || game.gameState === 'CRIT');
+        this.nextGame = games.find(game => game.status.abstract === 'FUT');
+        this.liveGames = games.filter(game => game.status.abstract === 'LIVE' || game.status.abstract === 'CRIT');
     },
 
     /**
