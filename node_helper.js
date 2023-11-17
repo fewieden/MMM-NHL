@@ -303,7 +303,7 @@ module.exports = NodeHelper.create({
         return {
             id: team.id,
             name: this.teamMapping[team.id].name,
-            short: team.short,
+            short: team.abbrev,
             score: team.score ?? 0
         };
     },
