@@ -26,14 +26,10 @@
                         {% elif games[index].status.abstract === "FUT" %}
                             {{ games[index] | formatStartDate }}
                         {% elif (games[index].status.abstract === "LIVE" or games[index].status.detailed === "CRIT") and games[index].live.period %}
-                            {% if games[index].live.timeRemaining or games[index].status.detailed === "CRIT" %}
+                            {% if games[index].live.timeRemaining %}
                                 <div class="live">{{ games[index].live.period | translate }}</div>
                                 <div class="live">
-                                    {% if games[index].status.detailed === "CRIT" %}
-                                        {{ "FINAL" | translate }}
-                                    {% else %}
-                                        {{ "TIME_LEFT" | translate({TIME: games[index].live.timeRemaining}) }}
-                                    {% endif %}
+                                    {{ "TIME_LEFT" | translate({TIME: games[index].live.timeRemaining}) }}
                                 </div>
                             {% else %}
                                 {{ games[index].live.period | translate }}
