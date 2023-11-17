@@ -16,12 +16,6 @@
 const fetch = require('node-fetch');
 
 /**
- * @external querystring
- * @see https://nodejs.org/api/querystring.html
- */
-const qs = require('querystring');
-
-/**
  * @external logger
  * @see https://github.com/MichMich/MagicMirror/blob/master/js/logger.js
  */
@@ -33,7 +27,6 @@ const Log = require('logger');
  */
 const NodeHelper = require('node_helper');
 
-const BASE_URL = 'https://statsapi.web.nhl.com/api/v1';
 const BASE_PLAYOFF_URL = 'https://statsapi.web.nhl.com/api/v1/tournaments/playoffs?expand=round.series';
 
 /**
@@ -41,8 +34,7 @@ const BASE_PLAYOFF_URL = 'https://statsapi.web.nhl.com/api/v1/tournaments/playof
  *
  * @typedef {object} Team
  * @property {number} id - Team identifier.
- * @property {string} name - Full team name.
- * @property {string} short - 3 letter team name.
+ * @property {string} abbrev - 3 letter team name.
  * @property {number} score - Current score of the team.
  */
 
@@ -53,25 +45,25 @@ const BASE_PLAYOFF_URL = 'https://statsapi.web.nhl.com/api/v1/tournaments/playof
  * @property {number} id - Game identifier.
  * @property {string} timestamp - Start date of the game in UTC timezone.
  * @property {string} gameDay - Game day in format YYYY-MM-DD in north american timezone.
- * @property {object} status - Contains information about the game status.
- * @property {string} status.abstract - Abstract game status e.g. Preview, Live or Final.
- * @property {string} status.detailed - More detailed version of the abstract game status.
- * @property {object} teams - Contains information about both teams.
- * @property {Team} teams.away - Contains information about the away team.
- * @property {Team} teams.home - Contains information about the home team.
- * @property {object} live - Contains information about the live state of the game.
- * @property {string} live.period - Period of the game e.g. 1st, 2nd, 3rd, OT or SO.
- * @property {string} live.timeRemaining - Remaining time of the current period in format mm:ss.
+ * @property {string} gameState - Contains information about the game status, e.g. OFF, LIVE, CRIT, FUT.
+ * @property {Team} away_team - Contains information about the away team.
+ * @property {Team} home_team - Contains information about the home team.
+ * @property {object} periodDescriptor - Contains information about the period of play of the game. Is present on all games, past, present, and future.
+ * @property {number} periodDescriptor.number - Period of the game e.g. 1, 2, 3, 4.
+ * @property {string} periodDescriptor.periodType - Abbreviated description of the period type, e.g. REG, OT.
  */
 
 /**
  * Derived game details from API endpoint for easier usage.
  *
  * @typedef {object} Series
- * @property {number} number - Game identifier.
- * @property {number} round - Start date of the game in UTC timezone.
- * @property {Team} teams.away - Contains information about the away team.
- * @property {Team} teams.home - Contains information about the home team.
+ * @property {number} gameNumberOfSeries - Game identifier.
+ * @property {number} round - Playoff round number, e.g. 1, 2, 3, 4.
+ * @property {string} roundAbbrev - Abbreviation of round type, e.g. SCF
+ * @property {number} topSeedTeamId - Contains the ID of the top-seeded team.
+ * @property {number} topSeedWins - Contains the number of wins of the top-seeded team in this round.
+ * @property {number} bottomSeedTeamId - Contains the ID of the bottom-seeded team.
+ * @property {number} bottomSeedWins - Contains the number of wins of the bottom-seed team in this round.
  */
 
 /**
@@ -79,7 +71,7 @@ const BASE_PLAYOFF_URL = 'https://statsapi.web.nhl.com/api/v1/tournaments/playof
  *
  * @typedef {object} SeasonDetails
  * @property {string} year - Year of the season in format yy/yy e.g. 20/21.
- * @property {string} mode - Mode of the season e.g. PR, R and P.
+ * @property {number} mode - Mode of the season e.g. 0, 1 and 2.
  */
 
 /**
@@ -130,7 +122,7 @@ module.exports = NodeHelper.create({
      * @returns {void}
      */
     async initTeams() {
-        const response = await fetch(`${BASE_URL}/teams`);
+        const response = await fetch(`https://api.nhle.com/stats/rest/en/team`);
 
         if (!response.ok) {
             Log.error(`Initializing NHL teams failed: ${response.status} ${response.statusText}`);
@@ -138,10 +130,10 @@ module.exports = NodeHelper.create({
             return;
         }
 
-        const { teams } = await response.json();
+        const { data } = await response.json();
 
-        this.teamMapping = teams.reduce((mapping, team) => {
-            mapping[team.id] = team.abbreviation;
+        this.teamMapping = data.reduce((mapping, team) => {
+            mapping[team.id] = {short: team.triCode, name: team.fullName};
 
             return mapping;
         }, {});
@@ -160,12 +152,7 @@ module.exports = NodeHelper.create({
         const startDate = new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' })
             .format(date);
 
-        date.setDate(date.getDate() + this.config.daysInPast + this.config.daysAhead);
-        const endDate = new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' })
-            .format(date);
-
-        const query = qs.stringify({ startDate, endDate, expand: 'schedule.linescore' });
-        const url = `${BASE_URL}/schedule?${query}`;
+        const url = `https://api-web.nhle.com/v1/schedule/${startDate}`;
         const response = await fetch(url);
 
         if (!response.ok) {
@@ -173,9 +160,9 @@ module.exports = NodeHelper.create({
             return;
         }
 
-        const { dates } = await response.json();
+        const { gameWeek } = await response.json();
 
-        return dates.map(({ date, games }) => games.map(game => ({ ...game, gameDay: date }))).flat();
+        return gameWeek.map(({ date, games }) => games.map(game => ({ ...game, gameDay: date, gameDate: new Date(game.startTimeUTC) }))).flat();
     },
 
     /**
@@ -186,6 +173,7 @@ module.exports = NodeHelper.create({
      * @returns {object} Raw playoff data from API endpoint.
      */
     async fetchPlayoffs() {
+        // todo: find playoff endpoints in new api
         const response = await fetch(BASE_PLAYOFF_URL);
 
         if (!response.ok) {
@@ -212,8 +200,8 @@ module.exports = NodeHelper.create({
             return true;
         }
 
-        const homeTeam = this.teamMapping[game.teams.home.team.id];
-        const awayTeam = this.teamMapping[game.teams.away.team.id];
+        const homeTeam = this.teamMapping[game.home_team.id].short;
+        const awayTeam = this.teamMapping[game.away_team.id].short;
 
         return focus.includes(homeTeam) || focus.includes(awayTeam);
     },
@@ -238,9 +226,9 @@ module.exports = NodeHelper.create({
         const today = games.filter(game => game.gameDay === date);
         const tomorrow = games.filter(game => game.gameDay > date);
 
-        const ongoingStates = ['Final', 'Live'];
+        const ongoingStates = ['OFF', 'CRIT', 'LIVE'];
 
-        if (today.some(game => ongoingStates.includes(game.status.abstract))) {
+        if (today.some(game => ongoingStates.includes(game.gameState))) {
             return [...today, ...tomorrow];
         }
 
@@ -256,11 +244,11 @@ module.exports = NodeHelper.create({
      * @returns {SeasonDetails} Current season details.
      */
     computeSeasonDetails(schedule) {
-        const game = schedule.find(game => game.status.abstractGameState !== 'Final') || schedule[schedule.length - 1];
+        const game = schedule.find(game => game.gameState !== 'OFF') || schedule[schedule.length - 1];
 
         if (game) {
             return {
-                year: `${game.season.slice(2, 4)}/${game.season.slice(6, 8)}`,
+                year: `${game.season.toString().slice(2, 4)}/${game.season.toString().slice(6, 8)}`,
                 mode: game.gameType
             };
         }
@@ -271,7 +259,7 @@ module.exports = NodeHelper.create({
 
         return {
             year: `${currentYear}/${nextYear}`,
-            mode: 'PR'
+            mode: 1
         };
     },
 
@@ -308,17 +296,16 @@ module.exports = NodeHelper.create({
      *
      * @returns {Team} Parsed team information.
      */
-    parseTeam(teams = {}, type) {
-        const team = teams[type];
+    parseTeam(team) {
         if (!team) {
-            Log.error({ NoTeamFound: teams, type });
+            Log.error('no team given');
             return {};
         }
         return {
-            id: team.team.id,
-            name: team.team.name,
-            short: this.teamMapping[team.team.id],
-            score: team.score
+            id: team.id,
+            name: this.teamMapping[team.id].name,
+            short: team.short,
+            score: team.score ?? 0
         };
     },
 
@@ -332,9 +319,13 @@ module.exports = NodeHelper.create({
      *
      * @returns {Game} Parsed game information.
      */
-    parsePlayoffTeam(teamData = {}, index) {
-        const team = this.parseTeam(teamData, index);
-        team.score = teamData[index].seriesRecord.wins;
+    parsePlayoffTeam(rawTeam, game) {
+        const team = this.parseTeam(rawTeam);
+        if (game.seriesStatus.topSeedTeamId == team.id) {
+            team.score = game.seriesStatus.topSeedWins;
+        } else {
+            team.score = game.seriesStatus.bottomSeedWins;
+        }
         return team;
     },
 
@@ -348,20 +339,18 @@ module.exports = NodeHelper.create({
      */
     parseGame(game = {}) {
         return {
-            id: game.gamePk,
+            id: game.id,
             timestamp: game.gameDate,
             gameDay: game.gameDay,
-            status: {
-                abstract: game.status.abstractGameState,
-                detailed: game.status.detailedState
-            },
+            gameState: game.gameState,
             teams: {
-                away: this.parseTeam(game.teams, 'away'),
-                home: this.parseTeam(game.teams, 'home')
+                away: this.parseTeam(game.awayTeam),
+                home: this.parseTeam(game.homeTeam)
             },
             live: {
-                period: game.linescore.currentPeriodOrdinal,
-                timeRemaining: game.linescore.currentPeriodTimeRemaining
+                period: game.periodDescriptor.number,
+                periodType: game.periodDescriptor.periodType,
+                timeRemaining: '?' // todo: unavailable in new api?
             }
         };
     },
@@ -397,8 +386,8 @@ module.exports = NodeHelper.create({
      * @returns {void}
      */
     setNextandLiveGames(games) {
-        this.nextGame = games.find(game => game.status.abstract === 'Preview');
-        this.liveGames = games.filter(game => game.status.abstract === 'Live');
+        this.nextGame = games.find(game => game.gameState === 'FUT');
+        this.liveGames = games.filter(game => game.gameState === 'LIVE' || game.gameState === 'CRIT');
     },
 
     /**
@@ -438,7 +427,7 @@ module.exports = NodeHelper.create({
 
         this.setNextandLiveGames(rollOverGames);
         this.sendSocketNotification('SCHEDULE', { games: rollOverGames, season });
-        if (season.mode === 'P' || games.length === 0) {
+        if (season.mode === 3 || games.length === 0) {
 
             const playoffData = await this.fetchPlayoffs();
             const playoffSeries = this.computePlayoffDetails(playoffData).filter(s => s.round >= playoffData.defaultRound);
