@@ -170,6 +170,19 @@ module.exports = NodeHelper.create({
 
         const schedule = gameWeek.map(({ date, games }) => games.filter(game => new Date(game.startTimeUTC) < endDate).map(game => ({ ...game, gameDay: date, gameDate: new Date(game.startTimeUTC) }))).flat();
 
+        const scoresUrl = `https://api-web.nhle.com/v1/score/${startDateStr}`;
+        const scoresResponse = await fetch(scoresUrl);
+        const { games } = await scoresResponse.json();
+
+        for (const game of schedule) {
+            if (game.gameState !== 'LIVE' && game.gameState !== 'CRIT') {
+                continue;
+            }
+
+            const score = games.find(score => score.id === game.id);
+            game.timeRemaining = score?.clock?.timeRemaining;
+        }
+
         return schedule;
     },
 
@@ -357,7 +370,7 @@ module.exports = NodeHelper.create({
             live: {
                 period: this.getNumberWithOrdinal(game.periodDescriptor.number),
                 periodType: game.periodDescriptor.periodType,
-                timeRemaining: '?' // todo: unavailable in new api?
+                timeRemaining: game.timeRemaining
             }
         };
     },
