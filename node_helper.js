@@ -347,11 +347,25 @@ module.exports = NodeHelper.create({
                 home: this.parseTeam(game.homeTeam)
             },
             live: {
-                period: game.periodDescriptor.number,
+                period: this.getNumberWithOrdinal(game.periodDescriptor.number),
                 periodType: game.periodDescriptor.periodType,
                 timeRemaining: '?' // todo: unavailable in new api?
             }
         };
+    },
+
+    /**
+     * @function getNumberWithOrdinal
+     * @description Converts a raw number into a number with appropriate English ordinal suffix.
+     * 
+     * @param {number} n - The number to apply an ordinal suffix to.
+     * 
+     * @returns {string} The given number with its ordinal suffix appended.
+     */
+    getNumberWithOrdinal(n) {
+        let s = ["th", "st", "nd", "rd"];
+        let v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
     },
 
     /**

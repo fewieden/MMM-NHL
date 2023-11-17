@@ -35,7 +35,7 @@
                                 {% endif %}
                             </div>
                         {% else %}
-                            {% if games[index].live.period === 3 %}
+                            {% if games[index].live.period === '3rd' %}
                                 {{ "FINAL" | translate }}
                             {% else %}
                                 {{ ("FINAL_" + games[index].live.periodType) | translate }}
