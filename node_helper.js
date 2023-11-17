@@ -133,7 +133,7 @@ module.exports = NodeHelper.create({
         const { data } = await response.json();
 
         this.teamMapping = data.reduce((mapping, team) => {
-            mapping[team.id] = {short: team.triCode, name: team.fullName};
+            mapping[team.id] = { short: team.triCode, name: team.fullName };
 
             return mapping;
         }, {});
@@ -291,8 +291,7 @@ module.exports = NodeHelper.create({
      * @function parseTeam
      * @description Transforms raw team information for easier usage.
      *
-     * @param {object} teams - Both teams in raw format.
-     * @param {string} type - Type of team: away or home.
+     * @param {object} team - Both teams in raw format.
      *
      * @returns {Team} Parsed team information.
      */
@@ -313,15 +312,15 @@ module.exports = NodeHelper.create({
      * @function parsePlayoffTeam
      * @description Transforms raw game information for easier usage.
      *
-     * @param {object} teamData - Raw game information.
+     * @param {object} rawTeam - Raw team information.
      *
-     * @param {number} index - Which index of teamData to operate on.
+     * @param {object} game - Raw game information.
      *
      * @returns {Game} Parsed game information.
      */
     parsePlayoffTeam(rawTeam, game) {
         const team = this.parseTeam(rawTeam);
-        if (game.seriesStatus.topSeedTeamId == team.id) {
+        if (game.seriesStatus.topSeedTeamId === team.id) {
             team.score = game.seriesStatus.topSeedWins;
         } else {
             team.score = game.seriesStatus.bottomSeedWins;
@@ -371,8 +370,8 @@ module.exports = NodeHelper.create({
             number: series.number,
             round: series.round.number,
             teams: {
-                home: this.parsePlayoffTeam(series.matchupTeams, 0),
-                away: this.parsePlayoffTeam(series.matchupTeams, 1),
+                home: this.parsePlayoffTeam(series.matchupTeams, undefined),
+                away: this.parsePlayoffTeam(series.matchupTeams, undefined),
             }
         }
     },
