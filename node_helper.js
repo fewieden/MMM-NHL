@@ -122,6 +122,10 @@ module.exports = NodeHelper.create({
      * @returns {void}
      */
     async initTeams() {
+        if (this.teamMapping) {
+            return;
+        }
+
         const response = await fetch(`https://api.nhle.com/stats/rest/en/team`);
 
         if (!response.ok) {
