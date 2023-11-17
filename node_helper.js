@@ -357,14 +357,14 @@ module.exports = NodeHelper.create({
     /**
      * @function getNumberWithOrdinal
      * @description Converts a raw number into a number with appropriate English ordinal suffix.
-     * 
+     *
      * @param {number} n - The number to apply an ordinal suffix to.
-     * 
+     *
      * @returns {string} The given number with its ordinal suffix appended.
      */
     getNumberWithOrdinal(n) {
-        let s = ["th", "st", "nd", "rd"];
-        let v = n % 100;
+        const s = ['th', 'st', 'nd', 'rd'];
+        const v = n % 100;
         return n + (s[(v - 20) % 10] || s[v] || s[0]);
     },
 
