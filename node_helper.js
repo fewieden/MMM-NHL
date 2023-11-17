@@ -149,10 +149,13 @@ module.exports = NodeHelper.create({
     async fetchSchedule() {
         const date = new Date();
         date.setDate(date.getDate() - this.config.daysInPast);
-        const startDate = new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' })
+        const startDateStr = new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' })
             .format(date);
 
-        const url = `https://api-web.nhle.com/v1/schedule/${startDate}`;
+        date.setDate(date.getDate() + this.config.daysInPast + this.config.daysAhead);
+        const endDate = date;
+
+        const url = `https://api-web.nhle.com/v1/schedule/${startDateStr}`;
         const response = await fetch(url);
 
         if (!response.ok) {
@@ -162,7 +165,7 @@ module.exports = NodeHelper.create({
 
         const { gameWeek } = await response.json();
 
-        return gameWeek.map(({ date, games }) => games.map(game => ({ ...game, gameDay: date, gameDate: new Date(game.startTimeUTC) }))).flat();
+        return gameWeek.map(({ date, games }) => games.filter(game => { return new Date(game.startTimeUTC) < endDate; }).map(game => ({ ...game, gameDay: date, gameDate: new Date(game.startTimeUTC) }))).flat();
     },
 
     /**
