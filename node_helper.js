@@ -320,7 +320,7 @@ module.exports = NodeHelper.create({
      * @function parseTeam
      * @description Transforms raw team information for easier usage.
      *
-     * @param {object} team - Both teams in raw format.
+     * @param {object} team - Team in raw format.
      *
      * @returns {Team} Parsed team information.
      */
