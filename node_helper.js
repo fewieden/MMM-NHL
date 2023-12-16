@@ -143,42 +143,45 @@ module.exports = NodeHelper.create({
     },
 
     /**
-     * @function fetchSchedule
-     * @description Retrieves a list of games from the API with timespan based on config options.
+     * @function getDates
+     * @description Helper function to retrieve dates in the past and future based on config options.
      * @async
      *
-     * @returns {object[]} Raw games from API endpoint.
+     * @returns {object} Dates in the past and future.
      */
-    async fetchSchedule() {
-        const date = new Date();
-        date.setDate(date.getDate() - this.config.daysInPast);
-        const startDateStr = new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' })
-            .format(date);
+    getScheduleDates() {
+        const start = new Date();
+        start.setDate(start.getDate() - this.config.daysInPast);
 
-        const scheduleUrl = `https://api-web.nhle.com/v1/schedule/${startDateStr}`;
-        const scheduleResponse = await fetch(scheduleUrl);
+        const end = new Date();
+        end.setDate(end.getDate() + this.config.daysAhead + 1);
+        end.setHours(0);
+        end.setMinutes(0);
+        end.setSeconds(0);
 
-        if (!scheduleResponse.ok) {
-            Log.error(`Fetching NHL schedule failed: ${scheduleResponse.status} ${scheduleResponse.statusText}. Url: ${scheduleUrl}`);
-            return;
-        }
+        const today = new Date();
 
-        const { gameWeek } = await scheduleResponse.json();
+        return {
+            startUtc: start.toISOString(),
+            startFormatted: new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' }).format(start),
+            endUtc: end.toISOString(),
+            endFormatted: new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' }).format(end),
+            todayUtc: today.toISOString(),
+            todayFormatted: new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' }).format(today)
+        };
+    },
 
-        date.setDate(date.getDate() + this.config.daysInPast + this.config.daysAhead + 1);
-        date.setHours(0);
-        date.setMinutes(0);
-        date.setSeconds(0);
-
-        const endDateUTC = date.toISOString();
-
-        const schedule = gameWeek.map(({ date, games }) => games.filter(game => game.startTimeUTC < endDateUTC).map(game => ({...game, gameDay: date}))).flat();
-
-        const todayDateStr = new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' })
-            .format(new Date());
-        const scoresUrl = `https://api-web.nhle.com/v1/score/${todayDateStr}`;
+    /**
+     * @function hydrateRemainingTime
+     * @description Hydrates remaining time on the games in the schedule from the scores API endpoint.
+     * @async
+     *
+     * @returns {object[]} Raw games from API endpoint including remaining time.
+     */
+    async hydrateRemainingTime(schedule) {
+        const { todayFormatted } = this.getScheduleDates();
+        const scoresUrl = `https://api-web.nhle.com/v1/score/${todayFormatted}`;
         const scoresResponse = await fetch(scoresUrl);
-
         if (!scoresResponse.ok) {
             Log.error(`Fetching NHL scores failed: ${scoresResponse.status} ${scoresResponse.statusText}. Url: ${scoresUrl}`);
 
@@ -197,6 +200,32 @@ module.exports = NodeHelper.create({
         }
 
         return schedule;
+    },
+
+    /**
+     * @function fetchSchedule
+     * @description Retrieves a list of games from the API with timespan based on config options.
+     * @async
+     *
+     * @returns {object[]} Raw games from API endpoint.
+     */
+    async fetchSchedule() {
+        const { startFormatted, endUtc } = this.getScheduleDates();
+
+        const scheduleUrl = `https://api-web.nhle.com/v1/schedule/${startFormatted}`;
+        const scheduleResponse = await fetch(scheduleUrl);
+        if (!scheduleResponse.ok) {
+            Log.error(`Fetching NHL schedule failed: ${scheduleResponse.status} ${scheduleResponse.statusText}. Url: ${scheduleUrl}`);
+            return;
+        }
+
+        const { gameWeek } = await scheduleResponse.json();
+
+        const schedule = gameWeek.map(({ date, games }) => games.filter(game => game.startTimeUTC < endUtc).map(game => ({ ...game, gameDay: date }))).flat();
+
+        const scheduleWithRemainingTime = await this.hydrateRemainingTime(schedule);
+
+        return scheduleWithRemainingTime;
     },
 
     /**
