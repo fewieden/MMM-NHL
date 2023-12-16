@@ -89,6 +89,8 @@ module.exports = NodeHelper.create({
     nextGame: null,
     /** @member {Game[]} liveGames - List of all ongoing games. */
     liveGames: [],
+    /** @member {Game[]} liveStates - List of all live game states. */
+    liveStates: ['LIVE', 'CRIT'],
 
     /**
      * @function socketNotificationReceived
@@ -143,7 +145,7 @@ module.exports = NodeHelper.create({
     },
 
     /**
-     * @function getDates
+     * @function getScheduleDates
      * @description Helper function to retrieve dates in the past and future based on config options.
      * @async
      *
@@ -172,6 +174,26 @@ module.exports = NodeHelper.create({
     },
 
     /**
+     * @function getRemainingGameTime
+     * @description Helper function to retrieve remaining game time.
+     * @async
+     *
+     * @returns {string?} Remaining game time.
+     */
+    getRemainingGameTime(game, scores) {
+        if (!this.liveStates.includes(game.gameState)) {
+            return;
+        }
+
+        const score = scores.find(score => score.id === game.id);
+        if (!score) {
+            return;
+        }
+
+        return score?.clock?.inIntermission ? '00:00' : score?.clock?.timeRemaining;
+    },
+
+    /**
      * @function hydrateRemainingTime
      * @description Hydrates remaining time on the games in the schedule from the scores API endpoint.
      * @async
@@ -191,12 +213,7 @@ module.exports = NodeHelper.create({
         const { games } = await scoresResponse.json();
 
         for (const game of schedule) {
-            if (game.gameState !== 'LIVE' && game.gameState !== 'CRIT') {
-                continue;
-            }
-
-            const score = games.find(score => score.id === game.id);
-            game.timeRemaining = score?.clock?.inIntermission ? '00:00' : score?.clock?.timeRemaining;
+            game.timeRemaining = this.getRemainingGameTime(game, games);
         }
 
         return schedule;
@@ -472,7 +489,7 @@ module.exports = NodeHelper.create({
      */
     setNextandLiveGames(games) {
         this.nextGame = games.find(game => game.status === 'FUT');
-        this.liveGames = games.filter(game => ['LIVE', 'CRIT'].includes(game.status));
+        this.liveGames = games.filter(game => this.liveStates.includes(game.status));
     },
 
     /**
