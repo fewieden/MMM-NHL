@@ -46,8 +46,8 @@ const BASE_PLAYOFF_URL = 'https://statsapi.web.nhl.com/api/v1/tournaments/playof
  * @property {string} timestamp - Start date of the game in UTC timezone.
  * @property {string} gameDay - Game day in format YYYY-MM-DD in north american timezone.
  * @property {string} gameState - Contains information about the game status, e.g. OFF, LIVE, CRIT, FUT.
- * @property {Team} away_team - Contains information about the away team.
- * @property {Team} home_team - Contains information about the home team.
+ * @property {Team} awayTeam - Contains information about the away team.
+ * @property {Team} homeTeam - Contains information about the home team.
  * @property {object} periodDescriptor - Contains information about the period of play of the game. Is present on all games, past, present, and future.
  * @property {number} periodDescriptor.number - Period of the game e.g. 1, 2, 3, 4.
  * @property {string} periodDescriptor.periodType - Abbreviated description of the period type, e.g. REG, OT.
