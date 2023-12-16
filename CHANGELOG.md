@@ -4,6 +4,8 @@
 
 ### Fixed
 
+* Updated module to work with the new NHL API.
+
 ### Added
 
 ### Changed
