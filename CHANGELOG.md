@@ -1,5 +1,13 @@
 # MMM-NHL Changelog
 
+## [2.4.0]
+
+Thanks to @parnic @dannoh for their contributions.
+
+### Fixed
+
+* Updated module to work with the new NHL API.
+
 ## [2.3.1]
 
 Thanks to @parnic @dannoh @timpeer for their contributions.

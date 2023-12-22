@@ -31,9 +31,9 @@ Module.register('MMM-NHL', {
      * @member {object.<string, string>} modes - Maps mode short codes to names.
      */
     modes: {
-        PR: 'Pre-season',
-        R: 'Regular season',
-        P: 'Playoffs',
+        1: 'Pre-season',
+        2: 'Regular season',
+        3: 'Playoffs',
     },
 
     /**

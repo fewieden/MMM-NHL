@@ -19,26 +19,27 @@
             {% for index in range(rotateIndex, maxGames) %}
                 <tr>
                     <td>
-                        {% if games[index].status.detailed === "Pre-Game" %}
+                        {% if games[index].status === "PRE" %}
                             {{ "PRE_GAME" | translate }}
-                        {% elif games[index].status.detailed === "Postponed" %}
+                        {# TODO: Find out what the state postponed state is in the new API #}
+                        {% elif games[index].status === "Postponed" %}
                             {{ "POSTPONED" | translate }}
-                        {% elif games[index].status.abstract === "Preview" %}
+                        {% elif games[index].status === "FUT" %}
                             {{ games[index] | formatStartDate }}
-                        {% elif games[index].status.abstract === "Live" and games[index].live.period %}
-                            <div class="live">{{ games[index].live.period | translate }}</div>
-                            <div class="live">
-                                {% if games[index].live.timeRemaining === "Final" %}
-                                    {{ "FINAL" | translate }}
-                                {% else %}
+                        {% elif (games[index].status === "LIVE" or games[index].status === "CRIT") and games[index].live.period %}
+                            {% if games[index].live.timeRemaining %}
+                                <div class="live">{{ games[index].live.period | translate }}</div>
+                                <div class="live">
                                     {{ "TIME_LEFT" | translate({TIME: games[index].live.timeRemaining}) }}
-                                {% endif %}
-                            </div>
+                                </div>
+                            {% else %}
+                                {{ games[index].live.period | translate }}
+                            {% endif %}
                         {% else %}
                             {% if games[index].live.period === '3rd' %}
                                 {{ "FINAL" | translate }}
                             {% else %}
-                                {{ ("FINAL_" + games[index].live.period) | translate }}
+                                {{ ("FINAL_" + games[index].live.periodType) | translate }}
                             {% endif %}
                         {% endif %}
                     </td>
