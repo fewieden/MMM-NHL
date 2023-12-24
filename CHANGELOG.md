@@ -1,9 +1,21 @@
 # MMM-NHL Changelog
 
-## [2.5.0]
+## [Unreleased]
+
+### Fixed
+
+### Added
+
+### Changed
+
+- Update workflows.
+- Update devDependencies.
+- Update lint process.
+- Lint files.
+
+### Removed
 
 - Replace node-fetch by internal fetch.
-- Update lint process and lint files.
 
 ## [2.4.0]
 
