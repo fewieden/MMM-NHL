@@ -26,30 +26,30 @@
  * @requires external:Module
  * @requires external:Log
  */
-Module.register('MMM-NHL', {
+Module.register("MMM-NHL", {
     /**
      * @member {object.<string, string>} modes - Maps mode short codes to names.
      */
     modes: {
-        1: 'Pre-season',
-        2: 'Regular season',
-        3: 'Playoffs',
+        1: "Pre-season",
+        2: "Regular season",
+        3: "Playoffs"
     },
 
     /**
      * @member {object.<string, string>} states - Maps game state short codes to translation keys.
      */
     states: {
-        '1st': '1ST_PERIOD',
-        '2nd': '2ND_PERIOD',
-        '3rd': '3RD_PERIOD',
-        OT: 'OVER_TIME',
-        SO: 'SHOOTOUT',
-        SHOOTOUT: 'SHOOTOUT',
-        FINAL: 'FINAL',
-        'FINAL OT': 'FINAL_OVERTIME',
-        'FINAL SO': 'FINAL_SHOOTOUT',
-        PPD: 'PPD'
+        "1st": "1ST_PERIOD",
+        "2nd": "2ND_PERIOD",
+        "3rd": "3RD_PERIOD",
+        OT: "OVER_TIME",
+        SO: "SHOOTOUT",
+        SHOOTOUT: "SHOOTOUT",
+        FINAL: "FINAL",
+        "FINAL OT": "FINAL_OVERTIME",
+        "FINAL SO": "FINAL_SHOOTOUT",
+        PPD: "PPD"
     },
 
     /**
@@ -118,10 +118,10 @@ Module.register('MMM-NHL', {
      */
     getTranslations() {
         return {
-            en: 'translations/en.json',
-            de: 'translations/de.json',
-            fr: 'translations/fr.json',
-            fi: 'translations/fi.json'
+            en: "translations/en.json",
+            de: "translations/de.json",
+            fr: "translations/fr.json",
+            fi: "translations/fi.json"
         };
     },
 
@@ -133,7 +133,7 @@ Module.register('MMM-NHL', {
      * @returns {string[]} List of the style dependency filepaths.
      */
     getStyles() {
-        return ['font-awesome.css', 'MMM-NHL.css'];
+        return ["font-awesome.css", "MMM-NHL.css"];
     },
 
     /**
@@ -144,7 +144,7 @@ Module.register('MMM-NHL', {
      * @returns {string} Path to nunjuck template.
      */
     getTemplate() {
-        return 'templates/MMM-NHL.njk';
+        return "templates/MMM-NHL.njk";
     },
 
     /**
@@ -162,7 +162,10 @@ Module.register('MMM-NHL', {
             games: this.games,
             playoffSeries: this.playoffSeries,
             rotateIndex: this.rotateIndex,
-            maxGames: Math.min(this.games.length, this.rotateIndex + this.config.matches),
+            maxGames: Math.min(
+                this.games.length,
+                this.rotateIndex + this.config.matches
+            ),
             config: this.config
         };
     },
@@ -183,7 +186,7 @@ Module.register('MMM-NHL', {
             this.config.daysAhead = 1;
         }
 
-        this.sendSocketNotification('CONFIG', { config: this.config });
+        this.sendSocketNotification("CONFIG", { config: this.config });
     },
 
     /**
@@ -195,12 +198,12 @@ Module.register('MMM-NHL', {
      * @param {*} payload - Detailed payload of the notification.
      */
     socketNotificationReceived(notification, payload) {
-        if (notification === 'SCHEDULE') {
+        if (notification === "SCHEDULE") {
             this.loading = false;
             this.games = payload.games;
             this.season = payload.season;
             this.setRotateInterval();
-        } else if (notification === 'PLAYOFFS') {
+        } else if (notification === "PLAYOFFS") {
             this.playoffSeries = payload;
             this.updateDom(300);
         }
@@ -215,7 +218,10 @@ Module.register('MMM-NHL', {
     setRotateInterval() {
         if (!this.rotateInterval && this.games.length > this.config.matches) {
             this.rotateInterval = setInterval(() => {
-                if (this.rotateIndex + this.config.matches >= this.games.length) {
+                if (
+                    this.rotateIndex + this.config.matches >=
+                    this.games.length
+                ) {
                     this.rotateIndex = 0;
                 } else {
                     this.rotateIndex += this.config.matches;
@@ -237,19 +243,24 @@ Module.register('MMM-NHL', {
      * @returns {void}
      */
     addFilters() {
-        this.nunjucksEnvironment().addFilter('formatStartDate', game => {
+        this.nunjucksEnvironment().addFilter("formatStartDate", (game) => {
             const now = new Date();
             const inAWeek = now.setDate(now.getDate() + 7);
             const start = new Date(game.timestamp);
 
             if (start > inAWeek) {
                 return new Intl.DateTimeFormat(config.locale, {
-                    month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit"
                 }).format(start);
             }
 
             return new Intl.DateTimeFormat(config.locale, {
-                weekday: 'short', hour: '2-digit', minute: '2-digit'
+                weekday: "short",
+                hour: "2-digit",
+                minute: "2-digit"
             }).format(start);
         });
     }

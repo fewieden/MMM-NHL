@@ -1,7 +1,7 @@
 {
-    "extends": ["esnext", "esnext/style-guide", "node", "node/style-guide"],
+    "extends": ["eslint:recommended", "plugin:@stylistic/recommended-extends"],
     "parserOptions": {
-        "ecmaVersion": 2017,
+        "ecmaVersion": 2023,
         "sourceType": "module"
     },
     "settings": {
@@ -10,19 +10,14 @@
     "env": {
         "browser": true,
         "node": true,
-        "es6": true
+        "es2023": true
     },
+    "root": true,
     "rules": {
-        "import/no-commonjs": 0,
-        "import/no-nodejs-modules": 0,
-        "semi": 0,
-        "comma-dangle": 0,
-        "indent": ["error", 4],
-        "template-curly-spacing": 0,
-        "no-console": 0,
         "curly": ["error", "all"],
-        "array-bracket-spacing": 0,
-        "space-before-function-paren": 0,
-        "object-property-newline": ["error", { "allowAllPropertiesOnSameLine": true }]
+        "@stylistic/object-property-newline": [
+            "error",
+            { "allowAllPropertiesOnSameLine": true }
+        ]
     }
 }
