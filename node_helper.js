@@ -10,24 +10,19 @@
 /* eslint-env node */
 
 /**
- * @external node-fetch
- * @see https://www.npmjs.com/package/node-fetch
- */
-const fetch = require('node-fetch');
-
-/**
  * @external logger
  * @see https://github.com/MichMich/MagicMirror/blob/master/js/logger.js
  */
-const Log = require('logger');
+const Log = require("logger");
 
 /**
  * @external node_helper
  * @see https://github.com/MichMich/MagicMirror/blob/master/js/node_helper.js
  */
-const NodeHelper = require('node_helper');
+const NodeHelper = require("node_helper");
 
-const BASE_PLAYOFF_URL = 'https://statsapi.web.nhl.com/api/v1/tournaments/playoffs?expand=round.series';
+const BASE_PLAYOFF_URL =
+    "https://statsapi.web.nhl.com/api/v1/tournaments/playoffs?expand=round.series";
 
 /**
  * Derived team details of a game from API endpoint for easier usage.
@@ -78,19 +73,18 @@ const BASE_PLAYOFF_URL = 'https://statsapi.web.nhl.com/api/v1/tournaments/playof
  * @module node_helper
  * @description Backend for the module to query data from the API provider.
  *
- * @requires external:node-fetch
  * @requires external:logger
  * @requires external:node_helper
  */
 module.exports = NodeHelper.create({
     /** @member {string} requiresVersion - Defines the minimum version of MagicMirror² to run this node_helper. */
-    requiresVersion: '2.15.0',
+    requiresVersion: "2.15.0",
     /** @member {?Game} nextGame - The next upcoming game is stored in this variable. */
     nextGame: null,
     /** @member {Game[]} liveGames - List of all ongoing games. */
     liveGames: [],
     /** @member {Game[]} liveStates - List of all live game states. */
-    liveStates: ['LIVE', 'CRIT'],
+    liveStates: ["LIVE", "CRIT"],
 
     /**
      * @function socketNotificationReceived
@@ -104,14 +98,20 @@ module.exports = NodeHelper.create({
      * @returns {void}
      */
     async socketNotificationReceived(notification, payload) {
-        if (notification === 'CONFIG') {
+        if (notification === "CONFIG") {
             this.config = payload.config;
 
             await this.initTeams();
 
             await this.updateSchedule();
-            setInterval(() => this.updateSchedule(), this.config.reloadInterval);
-            setInterval(() => this.fetchOnLiveState(), this.config.liveReloadInterval);
+            setInterval(
+                () => this.updateSchedule(),
+                this.config.reloadInterval
+            );
+            setInterval(
+                () => this.fetchOnLiveState(),
+                this.config.liveReloadInterval
+            );
         }
     },
 
@@ -130,7 +130,9 @@ module.exports = NodeHelper.create({
         const response = await fetch(`https://api.nhle.com/stats/rest/en/team`);
 
         if (!response.ok) {
-            Log.error(`Initializing NHL teams failed: ${response.status} ${response.statusText}`);
+            Log.error(
+                `Initializing NHL teams failed: ${response.status} ${response.statusText}`
+            );
 
             return;
         }
@@ -165,11 +167,17 @@ module.exports = NodeHelper.create({
 
         return {
             startUtc: start.toISOString(),
-            startFormatted: new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' }).format(start),
+            startFormatted: new Intl.DateTimeFormat("fr-ca", {
+                timeZone: "America/Toronto"
+            }).format(start),
             endUtc: end.toISOString(),
-            endFormatted: new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' }).format(end),
+            endFormatted: new Intl.DateTimeFormat("fr-ca", {
+                timeZone: "America/Toronto"
+            }).format(end),
             todayUtc: today.toISOString(),
-            todayFormatted: new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' }).format(today)
+            todayFormatted: new Intl.DateTimeFormat("fr-ca", {
+                timeZone: "America/Toronto"
+            }).format(today)
         };
     },
 
@@ -185,12 +193,14 @@ module.exports = NodeHelper.create({
             return;
         }
 
-        const score = scores.find(score => score.id === game.id);
+        const score = scores.find((score) => score.id === game.id);
         if (!score) {
             return;
         }
 
-        return score?.clock?.inIntermission ? '00:00' : score?.clock?.timeRemaining;
+        return score?.clock?.inIntermission
+            ? "00:00"
+            : score?.clock?.timeRemaining;
     },
 
     /**
@@ -205,7 +215,9 @@ module.exports = NodeHelper.create({
         const scoresUrl = `https://api-web.nhle.com/v1/score/${todayFormatted}`;
         const scoresResponse = await fetch(scoresUrl);
         if (!scoresResponse.ok) {
-            Log.error(`Fetching NHL scores failed: ${scoresResponse.status} ${scoresResponse.statusText}. Url: ${scoresUrl}`);
+            Log.error(
+                `Fetching NHL scores failed: ${scoresResponse.status} ${scoresResponse.statusText}. Url: ${scoresUrl}`
+            );
 
             return schedule;
         }
@@ -232,15 +244,24 @@ module.exports = NodeHelper.create({
         const scheduleUrl = `https://api-web.nhle.com/v1/schedule/${startFormatted}`;
         const scheduleResponse = await fetch(scheduleUrl);
         if (!scheduleResponse.ok) {
-            Log.error(`Fetching NHL schedule failed: ${scheduleResponse.status} ${scheduleResponse.statusText}. Url: ${scheduleUrl}`);
+            Log.error(
+                `Fetching NHL schedule failed: ${scheduleResponse.status} ${scheduleResponse.statusText}. Url: ${scheduleUrl}`
+            );
             return;
         }
 
         const { gameWeek } = await scheduleResponse.json();
 
-        const schedule = gameWeek.map(({ date, games }) => games.filter(game => game.startTimeUTC < endUtc).map(game => ({ ...game, gameDay: date }))).flat();
+        const schedule = gameWeek
+            .map(({ date, games }) =>
+                games
+                    .filter((game) => game.startTimeUTC < endUtc)
+                    .map((game) => ({ ...game, gameDay: date }))
+            )
+            .flat();
 
-        const scheduleWithRemainingTime = await this.hydrateRemainingTime(schedule);
+        const scheduleWithRemainingTime =
+            await this.hydrateRemainingTime(schedule);
 
         return scheduleWithRemainingTime;
     },
@@ -257,12 +278,14 @@ module.exports = NodeHelper.create({
         const response = await fetch(BASE_PLAYOFF_URL);
 
         if (!response.ok) {
-            Log.error(`Fetching NHL playoffs failed: ${response.status} ${response.statusText}.`);
+            Log.error(
+                `Fetching NHL playoffs failed: ${response.status} ${response.statusText}.`
+            );
             return;
         }
 
         const playoffs = await response.json();
-        playoffs.rounds.sort((a, b) => a.number <= b.number ? 1 : -1);
+        playoffs.rounds.sort((a, b) => (a.number <= b.number ? 1 : -1));
 
         return playoffs;
     },
@@ -300,16 +323,17 @@ module.exports = NodeHelper.create({
             return games;
         }
 
-        const date = new Intl.DateTimeFormat('fr-ca', { timeZone: 'America/Toronto' })
-            .format(new Date());
+        const date = new Intl.DateTimeFormat("fr-ca", {
+            timeZone: "America/Toronto"
+        }).format(new Date());
 
-        const yesterday = games.filter(game => game.gameDay < date);
-        const today = games.filter(game => game.gameDay === date);
-        const tomorrow = games.filter(game => game.gameDay > date);
+        const yesterday = games.filter((game) => game.gameDay < date);
+        const today = games.filter((game) => game.gameDay === date);
+        const tomorrow = games.filter((game) => game.gameDay > date);
 
-        const ongoingStates = ['OFF', 'CRIT', 'LIVE'];
+        const ongoingStates = ["OFF", "CRIT", "LIVE"];
 
-        if (today.some(game => ongoingStates.includes(game.status))) {
+        if (today.some((game) => ongoingStates.includes(game.status))) {
             return [...today, ...tomorrow];
         }
 
@@ -325,11 +349,15 @@ module.exports = NodeHelper.create({
      * @returns {SeasonDetails} Current season details.
      */
     computeSeasonDetails(schedule) {
-        const game = schedule.find(game => game.gameState !== 'OFF') || schedule[schedule.length - 1];
+        const game =
+            schedule.find((game) => game.gameState !== "OFF") ||
+            schedule[schedule.length - 1];
 
         if (game) {
             return {
-                year: `${game.season.toString().slice(2, 4)}/${game.season.toString().slice(6, 8)}`,
+                year: `${game.season.toString().slice(2, 4)}/${game.season
+                    .toString()
+                    .slice(6, 8)}`,
                 mode: game.gameType
             };
         }
@@ -358,8 +386,8 @@ module.exports = NodeHelper.create({
         }
 
         const series = [];
-        playoffData.rounds.forEach(r => {
-            r.series.forEach(s => {
+        playoffData.rounds.forEach((r) => {
+            r.series.forEach((s) => {
                 const parsed = this.parseSeries(s);
                 if (parsed) {
                     series.push(parsed);
@@ -380,7 +408,7 @@ module.exports = NodeHelper.create({
      */
     parseTeam(team) {
         if (!team) {
-            Log.error('no team given');
+            Log.error("no team given");
             return {};
         }
 
@@ -435,7 +463,7 @@ module.exports = NodeHelper.create({
             live: {
                 period: this.getNumberWithOrdinal(game.periodDescriptor.number),
                 periodType: game.periodDescriptor.periodType,
-                timeRemaining: game.timeRemaining,
+                timeRemaining: game.timeRemaining
             }
         };
     },
@@ -450,7 +478,7 @@ module.exports = NodeHelper.create({
      */
     getNumberWithOrdinal(n) {
         // TODO: This function seems over complicated, don't we just have 1st 2nd and 3rd?
-        const s = ['th', 'st', 'nd', 'rd'];
+        const s = ["th", "st", "nd", "rd"];
         const v = n % 100;
 
         return n + (s[(v - 20) % 10] || s[v] || s[0]);
@@ -474,9 +502,9 @@ module.exports = NodeHelper.create({
             round: series.round.number,
             teams: {
                 home: this.parsePlayoffTeam(series.matchupTeams, undefined), // TODO: Don't pass undefined to retrieve the correct score
-                away: this.parsePlayoffTeam(series.matchupTeams, undefined), // TODO: Don't pass undefined to retrieve the correct score
+                away: this.parsePlayoffTeam(series.matchupTeams, undefined) // TODO: Don't pass undefined to retrieve the correct score
             }
-        }
+        };
     },
 
     /**
@@ -488,8 +516,10 @@ module.exports = NodeHelper.create({
      * @returns {void}
      */
     setNextandLiveGames(games) {
-        this.nextGame = games.find(game => game.status === 'FUT');
-        this.liveGames = games.filter(game => this.liveStates.includes(game.status));
+        this.nextGame = games.find((game) => game.status === "FUT");
+        this.liveGames = games.filter((game) =>
+            this.liveStates.includes(game.status)
+        );
     },
 
     /**
@@ -521,21 +551,27 @@ module.exports = NodeHelper.create({
         schedule.sort(this.sortGamesByTimestampAndID);
         const season = this.computeSeasonDetails(schedule);
 
-        const focusSchedule = schedule.filter(this.filterGameByFocus.bind(this));
+        const focusSchedule = schedule.filter(
+            this.filterGameByFocus.bind(this)
+        );
 
         const games = focusSchedule.map(this.parseGame.bind(this));
 
         const rollOverGames = this.filterRollOverGames(games);
 
         this.setNextandLiveGames(rollOverGames);
-        this.sendSocketNotification('SCHEDULE', { games: rollOverGames, season });
+        this.sendSocketNotification("SCHEDULE", {
+            games: rollOverGames,
+            season
+        });
 
         if (season.mode === 3 || games.length === 0) {
-
             const playoffData = await this.fetchPlayoffs();
-            const playoffSeries = this.computePlayoffDetails(playoffData).filter(s => s.round >= playoffData.defaultRound);
+            const playoffSeries = this.computePlayoffDetails(
+                playoffData
+            ).filter((s) => s.round >= playoffData.defaultRound);
 
-            this.sendSocketNotification('PLAYOFFS', playoffSeries);
+            this.sendSocketNotification("PLAYOFFS", playoffSeries);
         }
     },
 
@@ -548,7 +584,8 @@ module.exports = NodeHelper.create({
      */
     fetchOnLiveState() {
         const hasLiveGames = this.liveGames.length > 0;
-        const gameAboutToStart = this.nextGame && new Date().toISOString() > this.nextGame.timestamp;
+        const gameAboutToStart =
+            this.nextGame && new Date().toISOString() > this.nextGame.timestamp;
 
         if (hasLiveGames || gameAboutToStart) {
             return this.updateSchedule();

@@ -3,14 +3,8 @@
     "dictionaries": ["jsdoc"]
   },
   "source": {
-    "include": [
-      "package.json",
-      "LICENSE",
-      "README.md"
-    ],
-    "exclude": [
-      "node_modules"
-    ]
+    "include": ["package.json", "LICENSE", "README.md"],
+    "exclude": ["node_modules"]
   },
   "opts": {
     "destination": "docs",
